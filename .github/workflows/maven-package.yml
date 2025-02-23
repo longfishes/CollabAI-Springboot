@@ -1,0 +1,48 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Upload to remote server
+        uses: appleboy/scp-action@v0.1.5
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          port: ${{ secrets.REMOTE_PORT }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          source: target/collab-ai-springboot-1.0.1.jar
+          target: /usr/local/CollabAI-Springboot/
+
+      - name: exec
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          port: ${{ secrets.REMOTE_PORT }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          script: |
+            cd /usr/local/CollabAI-Springboot
+            rm -f ./collab-ai-springboot-1.0.1.jar
+            mv ./target/collab-ai-springboot-1.0.1.jar ./
+            rm -rf ./target
+            sh cleanup.sh
+            sh start.sh
