@@ -25,7 +25,9 @@ public interface IUserService extends IService<User> {
 
     UserVO me();
 
-    void phoneRegister(RegDTO regDTO);
+    void phoneRegister(PhoneRegDTO phoneRegDTO);
+
+    void emailRegister(EmailRegDTO emailRegDTO);
 
     void forgot(ForgotDTO forgotDTO);
 

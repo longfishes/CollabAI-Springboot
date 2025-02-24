@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LambdaLoginDTO {
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "tt")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "tt", description = "username/email/phone")
     private String username;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "123")

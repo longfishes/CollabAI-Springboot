@@ -16,7 +16,7 @@ public class RegDTO {
     private String username;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example ="19000000000")
-    private String phone;
+    private String emailOrPhone;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "114514")
     private String code;

@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class ForgotDTO {
+public class PhoneForgotDTO {
 
-    // email or phone
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "180XXXXXXXX")
-    private String phoneOrEmail;
+    private String phone;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "321123")
     private String password;

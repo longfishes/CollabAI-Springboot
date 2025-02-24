@@ -79,8 +79,8 @@ public class UserController {
     @Operation(summary = "注册")
     @PostMapping("/register")
     @NoLogin
-    public Result<?> lambdaRegister(@RequestBody RegDTO regDTO) {
-        userService.phoneRegister(regDTO);
+    public Result<?> lambdaRegister(@RequestBody PhoneRegDTO phoneRegDTO) {
+        userService.phoneRegister(phoneRegDTO);
         return Result.success();
     }
 
@@ -97,7 +97,12 @@ public class UserController {
     @Operation(summary = "忘记密码")
     @PostMapping("/forgot")
     @NoLogin
-    public Result<?> forgot(@RequestBody ForgotDTO forgotDTO) {
+    public Result<?> forgot(@RequestBody PhoneForgotDTO phoneForgotDTO) {
+        ForgotDTO forgotDTO = ForgotDTO.builder()
+                .phoneOrEmail(phoneForgotDTO.getPhone())
+                .code(phoneForgotDTO.getCode())
+                .password(phoneForgotDTO.getPassword())
+                .build();
         userService.forgot(forgotDTO);
         return Result.success();
     }

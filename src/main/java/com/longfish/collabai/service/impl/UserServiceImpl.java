@@ -1,10 +1,8 @@
 package com.longfish.collabai.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.longfish.collabai.constant.RabbitMQConstant;
 import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
@@ -17,8 +15,6 @@ import com.longfish.collabai.service.IUserService;
 import com.longfish.collabai.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,30 +152,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public void phoneRegister(RegDTO regDTO) {
-        if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(regDTO.getUsername()).matches()) {
-            throw new BizException(StatusCodeEnum.USERNAME_FORMAT_ERROR);
-        }
-
-        if (!Pattern.compile(PASSWORD_CHECK_REGEX).matcher(regDTO.getPassword()).matches()) {
-            throw new BizException(StatusCodeEnum.PASSWORD_FORMAT_ERROR);
-        }
-
-        boolean isPhone = PhoneUtil.isValid(regDTO.getPhone());
-
-        if (!isPhone) {
-            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
-        }
-
-        PhoneRegDTO phoneRegDTO = BeanUtil.copyProperties(regDTO, PhoneRegDTO.class);
-        phoneRegDTO.setPhone(regDTO.getPhone());
-        phoneRegister(phoneRegDTO);
-
-    }
-
-    private void emailRegister(EmailRegDTO emailRegDTO) {
+    public void emailRegister(EmailRegDTO emailRegDTO) {
         if (usernameUniqueCheck(emailRegDTO.getUsername())) {
             throw new BizException(StatusCodeEnum.USER_EXIST);
+        }
+
+        if (!Pattern.compile(PASSWORD_CHECK_REGEX).matcher(emailRegDTO.getPassword()).matches()) {
+            throw new BizException(StatusCodeEnum.PASSWORD_FORMAT_ERROR);
         }
 
         String code = codeUtil.get(emailRegDTO.getEmail());
@@ -201,9 +180,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         save(save);
     }
 
-    private void phoneRegister(PhoneRegDTO phoneRegDTO) {
+    @Override
+    public void phoneRegister(PhoneRegDTO phoneRegDTO) {
         if (usernameUniqueCheck(phoneRegDTO.getUsername())) {
             throw new BizException(StatusCodeEnum.USER_EXIST);
+        }
+
+        if (!Pattern.compile(PASSWORD_CHECK_REGEX).matcher(phoneRegDTO.getPassword()).matches()) {
+            throw new BizException(StatusCodeEnum.PASSWORD_FORMAT_ERROR);
         }
 
         String code = codeUtil.get(phoneRegDTO.getPhone());
@@ -239,26 +223,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // TODO 删去
         code = "114514";
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("content", "您的验证码为" + code + "，有效期15分钟，请不要告诉他人哦！");
-
-        if (isEmail) {
-            EmailDTO emailDTO = EmailDTO.builder()
-                    .email(username)
-                    .subject("验证码")
-                    .template("code.html")
-                    .commentMap(map)
-                    .code(code)
-                    .build();
-            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        } else {
-            SmsDTO smsDTO = SmsDTO.builder()
-                    .phone(username)
-                    .code(code)
-                    .build();
-            rabbitTemplate.convertAndSend(RabbitMQConstant.PHONE_EXCHANGE, "*", new Message(JSON.toJSONBytes(smsDTO), new MessageProperties())
-            );
-        }
+        // TODO 开启
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("content", "您的验证码为" + code + "，有效期15分钟，请不要告诉他人哦！");
+//
+//        if (isEmail) {
+//            EmailDTO emailDTO = EmailDTO.builder()
+//                    .email(username)
+//                    .subject("验证码")
+//                    .template("code.html")
+//                    .commentMap(map)
+//                    .code(code)
+//                    .build();
+//            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+//        } else {
+//            SmsDTO smsDTO = SmsDTO.builder()
+//                    .phone(username)
+//                    .code(code)
+//                    .build();
+//            rabbitTemplate.convertAndSend(RabbitMQConstant.PHONE_EXCHANGE, "*", new Message(JSON.toJSONBytes(smsDTO), new MessageProperties())
+//            );
+//        }
     }
 
     @Override
@@ -270,25 +255,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public void forgot(ForgotDTO forgotDTO) {
-        boolean isPhone = PhoneUtil.isValid(forgotDTO.getUsername());
-        boolean isEmail = EmailUtil.isValid(forgotDTO.getUsername());
+        boolean isPhone = PhoneUtil.isValid(forgotDTO.getPhoneOrEmail());
+        boolean isEmail = EmailUtil.isValid(forgotDTO.getPhoneOrEmail());
 
         if (!isEmail && !isPhone) {
             throw new BizException(StatusCodeEnum.FORMAT_ERROR);
         }
-        if (forgotDTO.getPassword().equals("")) {
-            throw new BizException("密码不能为空");
+
+        if (!Pattern.compile(PASSWORD_CHECK_REGEX).matcher(forgotDTO.getPassword()).matches()) {
+            throw new BizException(StatusCodeEnum.PASSWORD_FORMAT_ERROR);
         }
 
         User query = User.builder().build();
-        if (isPhone) query.setPhone(forgotDTO.getUsername());
-        else query.setEmail(forgotDTO.getUsername());
+        if (isPhone) query.setPhone(forgotDTO.getPhoneOrEmail());
+        else query.setEmail(forgotDTO.getPhoneOrEmail());
         User result = lambdaQuery(query).one();
 
         if (result == null) {
             throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
         }
-        String code = codeUtil.get(forgotDTO.getUsername());
+        String code = codeUtil.get(forgotDTO.getPhoneOrEmail());
         if (code == null || !code.equals(forgotDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
