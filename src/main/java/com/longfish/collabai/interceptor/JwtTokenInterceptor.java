@@ -38,6 +38,10 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         if (((HandlerMethod) handler).getMethodAnnotation(NoLogin.class) != null) {
             return true;
         }
+        if (((HandlerMethod) handler).getBean().getClass().getName().contains("BasicErrorController")) {
+            if (resp.getStatus() == 404) throw new BizException(StatusCodeEnum.NOT_FOUND);
+            throw new BizException(StatusCodeEnum.FAIL);
+        }
 
         String token = req.getHeader(tokenName);
         try {
