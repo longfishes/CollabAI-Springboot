@@ -26,3 +26,4 @@ replay_pid*
 /target/
 /src/main/resources/application.yml
 /collab-ai-springboot.iml
+/src/main/resources/static/
