@@ -2,6 +2,7 @@ package com.longfish.collabai.config;
 
 import com.longfish.collabai.interceptor.AccessLimitInterceptor;
 import com.longfish.collabai.interceptor.JwtTokenInterceptor;
+import com.longfish.collabai.properties.LocalProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     private AccessLimitInterceptor accessLimitInterceptor;
+
+    @Autowired
+    private LocalProperties localProperties;
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
@@ -37,5 +41,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("file:/" + localProperties.getPath());
     }
 }
