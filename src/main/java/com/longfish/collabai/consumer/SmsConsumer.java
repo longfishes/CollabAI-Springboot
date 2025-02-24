@@ -27,7 +27,7 @@ public class SmsConsumer {
     public void process(byte[] data) {
         SmsDTO smsDTO = JSON.parseObject(new String(data), SmsDTO.class);
         log.info("开始发送手机验证码TO：{}", smsDTO.getPhone());
-        phoneUtil.sendMessage(smsDTO);
+//        phoneUtil.sendMessage(smsDTO);
         codeUtil.insert(smsDTO.getPhone(), String.valueOf(smsDTO.getCode()));
     }
 
