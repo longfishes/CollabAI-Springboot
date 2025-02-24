@@ -25,6 +25,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
         registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns("/**")
+                .excludePathPatterns("/static/**")
                 .excludePathPatterns("/ws/**");
 
         registry.addInterceptor(accessLimitInterceptor);
