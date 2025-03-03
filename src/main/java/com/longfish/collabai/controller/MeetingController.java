@@ -38,21 +38,21 @@ public class MeetingController {
         return Result.success();
     }
 
-    @Operation(summary = "编辑会议 基本信息（不包括编辑参与者）")
+    @Operation(summary = "编辑会议 - 基本信息", description = "不包括编辑参与者")
     @PutMapping("/edit")
     public Result<?> edit(@RequestBody MeetingEditDTO meetingEditDTO) {
         meetingService.edit(meetingEditDTO);
         return Result.success();
     }
 
-    @Operation(summary = "立即开始会议（手动开始）")
+    @Operation(summary = "立即开始会议", description = "手动开始")
     @PostMapping("/start/{id}")
     public Result<?> start(@PathVariable String id) {
         meetingService.start(id);
         return Result.success();
     }
 
-    @Operation(summary = "立即结束会议（手动结束）")
+    @Operation(summary = "立即结束会议", description = "手动结束")
     @PostMapping("/start/{id}")
     public Result<?> stop(@PathVariable String id) {
         meetingService.stop(id);
@@ -77,7 +77,7 @@ public class MeetingController {
         return Result.success(meetingService.participants(id));
     }
 
-    @Operation(summary = "编辑会议成员（拉人，删人，转让，授权）")
+    @Operation(summary = "编辑会议成员", description = "拉人，删人，转让，授权")
     @PutMapping("/participants/{id}")
     public Result<?> editMember(
             @PathVariable String id,
@@ -86,7 +86,7 @@ public class MeetingController {
         return Result.success();
     }
 
-    @Operation(summary = "加入会议（通过他人的邀请链接）")
+    @Operation(summary = "加入会议", description = "通过他人的邀请链接或填写会议号")
     @PostMapping("/join/{id}")
     public Result<?> join(@PathVariable String id) {
         meetingService.join(id);
