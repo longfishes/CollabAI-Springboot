@@ -34,4 +34,12 @@ public interface IMeetingService extends IService<Meeting> {
     void editMember(String id, List<ParticipantsEditDTO> editDTOList);
 
     void join(String id);
+
+    void leave(String id);
+
+    void del(String id);
+
+    void start(String id);
+
+    void stop(String id);
 }

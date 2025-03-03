@@ -1,6 +1,5 @@
 package com.longfish.collabai.controller;
 
-
 import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.dto.MeetingDTO;
 import com.longfish.collabai.pojo.dto.MeetingEditDTO;
@@ -46,6 +45,20 @@ public class MeetingController {
         return Result.success();
     }
 
+    @Operation(summary = "立即开始会议（手动开始）")
+    @PostMapping("/start/{id}")
+    public Result<?> start(@PathVariable String id) {
+        meetingService.start(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "立即结束会议（手动结束）")
+    @PostMapping("/start/{id}")
+    public Result<?> stop(@PathVariable String id) {
+        meetingService.stop(id);
+        return Result.success();
+    }
+
     @Operation(summary = "与我相关的会议")
     @GetMapping("/list")
     public Result<List<MeetingAbsVO>> list() {
@@ -77,6 +90,20 @@ public class MeetingController {
     @PostMapping("/join/{id}")
     public Result<?> join(@PathVariable String id) {
         meetingService.join(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "退出会议")
+    @PostMapping("/leave/{id}")
+    public Result<?> leave(@PathVariable String id) {
+        meetingService.leave(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "解散会议")
+    @DeleteMapping("/del/{id}")
+    public Result<?> del(@PathVariable String id) {
+        meetingService.del(id);
         return Result.success();
     }
 }

@@ -163,8 +163,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void editMember(String id, List<ParticipantsEditDTO> editDTOList) {
-        //noinspection EqualsBetweenInconvertibleTypes
-        if (!BaseContext.getCurrentId().equals(getById(id))) {
+        if (!BaseContext.getCurrentId().equals(getById(id).getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
         final boolean[] flag = {false, false};
@@ -198,5 +197,68 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
                     .authType(MeetingConstant.PARTICIPANT)
                     .build()
         );
+    }
+
+    @Override
+    public void leave(String id) {
+        Long currentId = BaseContext.getCurrentId();
+        if (!currentId.equals(getById(id).getHolderId())) {
+            throw new BizException("请先转让会议所有权再退出");
+        }
+        meetingUserService.remove(
+                new LambdaQueryWrapper<MeetingUser>()
+                        .eq(MeetingUser::getMeetingId, id)
+                        .eq(MeetingUser::getUserId, currentId)
+        );
+    }
+
+    @Override
+    public void del(String id) {
+        Long currentId = BaseContext.getCurrentId();
+        if (!currentId.equals(getById(id).getHolderId())) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+        removeById(id);
+        meetingUserService.remove(
+                new LambdaQueryWrapper<MeetingUser>().eq(MeetingUser::getMeetingId, id)
+        );
+    }
+
+    @Override
+    public void start(String id) {
+        Long currentId = BaseContext.getCurrentId();
+        Meeting meeting = getById(id);
+        if (!currentId.equals(meeting.getHolderId())) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+
+        LocalDateTime startTime = meeting.getStartTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime.isBefore(now)) {
+            throw new BizException("会议已经开始");
+        }
+
+        meeting.setStartTime(now);
+        updateById(meeting);
+    }
+
+    @Override
+    public void stop(String id) {
+        Long currentId = BaseContext.getCurrentId();
+        Meeting meeting = getById(id);
+        if (!currentId.equals(meeting.getHolderId())) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+
+        LocalDateTime endTime = meeting.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (endTime.isAfter(now)) {
+            throw new BizException("会议已经结束");
+        }
+
+        meeting.setEndTime(now);
+        updateById(meeting);
     }
 }
