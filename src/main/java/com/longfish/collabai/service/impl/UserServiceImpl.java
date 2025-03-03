@@ -102,6 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(USER_ID, result.getId());
+        claims.put(USER_NAME, result.getNickname());
 
         return JwtUtil.createJWT(
                 jwtProperties.getSecretKey(),
@@ -148,6 +149,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(USER_ID, result.getId());
+        claims.put(USER_NAME, result.getNickname());
 
         return JwtUtil.createJWT(
                 jwtProperties.getSecretKey(),

@@ -15,6 +15,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static com.longfish.collabai.constant.CommonConstant.USER_ID;
+import static com.longfish.collabai.constant.CommonConstant.USER_NAME;
 
 @Component
 @Slf4j
@@ -47,8 +48,9 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         try {
             Claims claims = JwtUtil.parseJWT(secretKey, token);
             Long userId = Long.valueOf(claims.get(USER_ID).toString());
-            log.info("current id: {}", userId);
-            BaseContext.setCurrentId(userId);
+            String nickname = claims.get(USER_NAME).toString();
+            log.info("current user: id【{}】 name【{}】", userId, nickname);
+            BaseContext.setCurrent(userId, nickname);
             return true;
 
         } catch (Exception ex) {

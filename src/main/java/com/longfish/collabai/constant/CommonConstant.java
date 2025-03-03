@@ -10,6 +10,8 @@ public interface CommonConstant {
 
     String USER_ID = "userId";
 
+    String USER_NAME = "userName";
+
     String UNKNOWN = "未知";
 
     String APPLICATION_JSON_UTF8 = "application/json;charset=utf-8";

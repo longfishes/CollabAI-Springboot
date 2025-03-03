@@ -63,7 +63,7 @@ public class UserController {
             example = HEADER_VAR)})
     @GetMapping("/logout")
     public Result<?> logout() {
-        BaseContext.removeCurrentId();
+        BaseContext.removeCurrent();
         return Result.success();
     }
 
