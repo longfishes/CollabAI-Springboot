@@ -1,11 +1,17 @@
 package com.longfish.collabai.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.longfish.collabai.constant.MeetingConstant;
 import com.longfish.collabai.context.BaseContext;
+import com.longfish.collabai.enums.StatusCodeEnum;
+import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.mapper.MeetingMapper;
 import com.longfish.collabai.mapper.MeetingUserMapper;
 import com.longfish.collabai.pojo.dto.MeetingDTO;
+import com.longfish.collabai.pojo.dto.MeetingEditDTO;
+import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.pojo.entity.MeetingUser;
 import com.longfish.collabai.pojo.vo.MeetingAbsVO;
@@ -38,19 +44,29 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     private IMeetingUserService meetingUserService;
 
     @Autowired
-    private MeetingMapper meetingMapper;
-
-    @Autowired
     private MeetingUserMapper meetingUserMapper;
 
     @Override
     public void createNew(MeetingDTO meetingDTO) {
         Long currentId = BaseContext.getCurrentId();
         String currentName = BaseContext.getCurrentName();
+
+        // 检查开始时间和结束时间的合法性
+        LocalDateTime startTime = meetingDTO.getStartTime();
+        LocalDateTime endTime = meetingDTO.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime.isBefore(now)) {
+            throw new BizException(StatusCodeEnum.START_TIME_ERROR);
+        }
+        if (endTime.isBefore(startTime)) {
+            throw new BizException(StatusCodeEnum.END_TIME_ERROR);
+        }
+
         Meeting meeting = BeanUtil.copyProperties(meetingDTO, Meeting.class);
         meeting.setHolderId(currentId)
                 .setHolderName(currentName)
-                .setCreateTime(LocalDateTime.now());
+                .setCreateTime(now);
         String meetingId = MD5Util.gen(meeting);
         meeting.setId(meetingId);
         save(meeting);
@@ -59,9 +75,38 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             MeetingUser.builder()
                 .meetingId(meetingId)
                 .userId(currentId)
-                .authType(3)
+                .authType(MeetingConstant.HOLDER)
                 .build()
         );
+    }
+
+    @Override
+    public void edit(MeetingEditDTO meetingEditDTO) {
+        String meetingId = meetingEditDTO.getId();
+        if (meetingId == null) {
+            throw new BizException("会议号不能为空");
+        }
+        Meeting meeting = getById(meetingId);
+
+        if (!BaseContext.getCurrentId().equals(meeting.getHolderId())) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+
+        BeanUtil.copyProperties(meetingEditDTO, meeting);
+
+        // 检查开始时间和结束时间的合法性
+        LocalDateTime startTime = meeting.getStartTime();
+        LocalDateTime endTime = meeting.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime.isBefore(now)) {
+            throw new BizException(StatusCodeEnum.START_TIME_ERROR);
+        }
+        if (endTime.isBefore(startTime)) {
+            throw new BizException(StatusCodeEnum.END_TIME_ERROR);
+        }
+
+        updateById(meeting);
     }
 
     @Override
@@ -107,10 +152,51 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
 
-        List<MeetingUserVO> participants = meetingUserMapper.selectMeetingUsersByMeetingId(id);
-
         return BeanUtil.copyProperties(meeting, MeetingVO.class)
-                .setIsHolder(currentId.equals(meeting.getHolderId()))
-                .setParticipants(participants);
+                .setIsHolder(currentId.equals(meeting.getHolderId()));
+    }
+
+    @Override
+    public List<MeetingUserVO> participants(String id) {
+        return meetingUserMapper.selectMeetingUsersByMeetingId(id);
+    }
+
+    @Override
+    public void editMember(String id, List<ParticipantsEditDTO> editDTOList) {
+        //noinspection EqualsBetweenInconvertibleTypes
+        if (!BaseContext.getCurrentId().equals(getById(id))) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+        final boolean[] flag = {false, false};
+        editDTOList.forEach(e -> {
+            if (e.getAuthType().equals(MeetingConstant.HOLDER)) {
+                if (flag[0]) flag[1] = true;
+                flag[0] = true;
+            }
+        });
+        if (flag[1]) {
+            throw new BizException("不能有多个创建者");
+        }
+
+        meetingUserService.remove(
+                new LambdaQueryWrapper<MeetingUser>().eq(MeetingUser::getMeetingId, id)
+        );
+
+        List<MeetingUser> meetingUsers = editDTOList.stream().map(participantsEditDTO ->
+                BeanUtil.copyProperties(participantsEditDTO, MeetingUser.class)
+                        .setMeetingId(id)).toList();
+
+        meetingUserService.saveBatch(meetingUsers);
+    }
+
+    @Override
+    public void join(String id) {
+        meetingUserService.save(
+            MeetingUser.builder()
+                    .meetingId(id)
+                    .userId(BaseContext.getCurrentId())
+                    .authType(MeetingConstant.PARTICIPANT)
+                    .build()
+        );
     }
 }

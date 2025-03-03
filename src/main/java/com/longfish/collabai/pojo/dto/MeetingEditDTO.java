@@ -17,7 +17,11 @@ import static com.longfish.collabai.constant.CommonConstant.PATTERN;
 @AllArgsConstructor
 @Data
 @Builder
-public class MeetingDTO {
+public class MeetingEditDTO {
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
+            example = "c198d1c782b707d8859968819d14d687", description = "会议号")
+    private String id;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "ai交流", description = "会议主题")
     private String title;

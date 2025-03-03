@@ -41,6 +41,10 @@ public enum StatusCodeEnum {
 
     PASSWORD_ERROR(40101, "密码错误", 200),
 
+    START_TIME_ERROR(40102, "开始时间必须在当前时间之后", 200),
+
+    END_TIME_ERROR(40103, "结束时间必须在开始时间之后", 200),
+
     FORBIDDEN(40300, "没有操作权限", 403),
 
     METHOD_NOT_ALLOWED(40500, "请求方法不允许", 403),
