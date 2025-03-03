@@ -53,7 +53,7 @@ public class MeetingController {
     }
 
     @Operation(summary = "立即结束会议", description = "手动结束")
-    @PostMapping("/start/{id}")
+    @PostMapping("/stop/{id}")
     public Result<?> stop(@PathVariable String id) {
         meetingService.stop(id);
         return Result.success();
