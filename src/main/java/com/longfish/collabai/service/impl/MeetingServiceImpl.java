@@ -73,16 +73,25 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
                 .list();
         List<String> meetingIds = meetingUserList.stream().map(MeetingUser::getMeetingId).toList();
         List<Meeting> meetings = listByIds(meetingIds);
-        return meetings.stream().map(
-                meeting -> {
-                    MeetingAbsVO vo = BeanUtil.copyProperties(meeting, MeetingAbsVO.class);
-                    vo.setIsHolder(currentId.equals(meeting.getHolderId()));
-                    return vo;
-                }
-        ).toList();
 
-        // TODO 时间排序
+        LocalDateTime now = LocalDateTime.now();
 
+        return meetings.stream().sorted((m1, m2) -> {
+            boolean m1NotStarted = m1.getStartTime().isAfter(now);
+            boolean m2NotStarted = m2.getStartTime().isAfter(now);
+
+            if (m1NotStarted && m2NotStarted) {
+                return m1.getStartTime().compareTo(m2.getStartTime());
+            } else if (!m1NotStarted && !m2NotStarted) {
+                return m2.getEndTime().compareTo(m1.getEndTime());
+            } else {
+                return m1NotStarted ? -1 : 1;
+            }
+        }).map(meeting -> {
+            MeetingAbsVO vo = BeanUtil.copyProperties(meeting, MeetingAbsVO.class);
+            vo.setIsHolder(currentId.equals(meeting.getHolderId()));
+            return vo;
+        }).toList();
     }
 
     @Override
