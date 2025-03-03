@@ -3,14 +3,15 @@ package com.longfish.collabai.controller;
 
 import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.dto.MeetingDTO;
+import com.longfish.collabai.pojo.vo.MeetingAbsVO;
+import com.longfish.collabai.pojo.vo.MeetingVO;
 import com.longfish.collabai.service.IMeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -33,5 +34,17 @@ public class MeetingController {
     public Result<?> create(@RequestBody MeetingDTO meetingDTO) {
         meetingService.createNew(meetingDTO);
         return Result.success();
+    }
+
+    @Operation(summary = "与我相关的会议")
+    @GetMapping("/list")
+    public Result<List<MeetingAbsVO>> list() {
+        return Result.success(meetingService.listMeetings());
+    }
+
+    @Operation(summary = "会议详情")
+    @GetMapping("/{id}")
+    public Result<MeetingVO> detail(@PathVariable String id) {
+        return Result.success(meetingService.detail(id));
     }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.longfish.collabai.mapper.MeetingUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.longfish.collabai.pojo.entity.MeetingUser">
+        <id column="id" property="id" />
+        <result column="meeting_id" property="meetingId" />
+        <result column="user_id" property="userId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, meeting_id, user_id, auth_type
+    </sql>
+
+    <select id="selectMeetingUsersByMeetingId" resultType="com.longfish.collabai.pojo.vo.MeetingUserVO">
+        SELECT
+            u.id AS userId,
+            mu.auth_type AS authType,
+            u.username,
+            u.email,
+            u.phone,
+            u.nickname,
+            u.avatar,
+            u.info,
+            u.gender,
+            u.birthday,
+            u.location
+        FROM
+            meeting_user mu
+        JOIN
+            user u ON mu.user_id = u.id
+        WHERE
+            mu.meeting_id = #{meetingId}
+    </select>
+
+</mapper>

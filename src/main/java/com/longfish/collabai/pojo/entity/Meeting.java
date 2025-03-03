@@ -28,7 +28,7 @@ public class Meeting implements Serializable {
     @Serial
     private static final long serialVersionUID = 18409321L;
 
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
     private String title;

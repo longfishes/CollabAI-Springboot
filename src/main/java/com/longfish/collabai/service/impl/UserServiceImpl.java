@@ -24,10 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.longfish.collabai.constant.CommonConstant.*;
@@ -49,9 +49,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private CodeUtil codeUtil;
-
-    @Autowired
-    private AESEncryptUtil aesEncryptUtil;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -255,7 +252,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public UserVO me() {
         User result = getById(BaseContext.getCurrentId());
         return BeanUtil.copyProperties(result, UserVO.class);
-
     }
 
     @Override
@@ -432,5 +428,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 .build();
 
         updateById(update);
+    }
+
+    @Override
+    public List<User> listByIds(Collection<? extends Serializable> idList) {
+        if (idList == null || idList.size() == 0) {
+            return new ArrayList<>();
+        }
+        return super.listByIds(idList);
     }
 }

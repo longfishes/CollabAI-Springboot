@@ -6,10 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.longfish.collabai.constant.CommonConstant.PATTERN;
 
@@ -17,8 +15,7 @@ import static com.longfish.collabai.constant.CommonConstant.PATTERN;
 @AllArgsConstructor
 @Data
 @Builder
-@Accessors(chain = true)
-public class MeetingVO {
+public class MeetingAbsVO {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
             example = "c198d1c782b707d8859968819d14d687", description = "会议号")
@@ -47,17 +44,8 @@ public class MeetingVO {
             example = "https://example.com/file", description = "封面图片url")
     private String coverImg;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "### 标题", description = "会议md内容")
-    private String mdContent;
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "### 标题", description = "会议ai总结")
-    private String aiSummary;
-
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
             example = "2025-03-03 10:32:38", description = "创建时间")
     @JsonFormat(pattern = PATTERN)
     private LocalDateTime createTime;
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "参与者")
-    private List<MeetingUserVO> participants;
 }
