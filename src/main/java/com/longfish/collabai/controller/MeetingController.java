@@ -46,16 +46,16 @@ public class MeetingController {
     }
 
     @Operation(summary = "立即开始会议", description = "手动开始")
-    @PostMapping("/start/{id}")
-    public Result<?> start(@PathVariable String id) {
-        meetingService.start(id);
+    @PostMapping("/start/{meetingId}")
+    public Result<?> startMeeting(@PathVariable String meetingId) {
+        meetingService.start(meetingId);
         return Result.success();
     }
 
     @Operation(summary = "立即结束会议", description = "手动结束")
-    @PostMapping("/stop/{id}")
-    public Result<?> stop(@PathVariable String id) {
-        meetingService.stop(id);
+    @PostMapping("/stop/{meetingId}")
+    public Result<?> stopMeeting(@PathVariable String meetingId) {
+        meetingService.stop(meetingId);
         return Result.success();
     }
 
@@ -72,38 +72,38 @@ public class MeetingController {
     }
 
     @Operation(summary = "会议成员")
-    @GetMapping("/participants/{id}")
-    public Result<List<MeetingUserVO>> participants(@PathVariable String id) {
-        return Result.success(meetingService.participants(id));
+    @GetMapping("/participants/{meetingId}")
+    public Result<List<MeetingUserVO>> participants(@PathVariable String meetingId) {
+        return Result.success(meetingService.participants(meetingId));
     }
 
     @Operation(summary = "编辑会议成员", description = "拉人，删人，转让，授权")
-    @PutMapping("/participants/{id}")
+    @PutMapping("/participants/{meetingId}")
     public Result<?> editMember(
-            @PathVariable String id,
+            @PathVariable String meetingId,
             @RequestBody List<ParticipantsEditDTO> participantsEditDTOList) {
-        meetingService.editMember(id, participantsEditDTOList);
+        meetingService.editMember(meetingId, participantsEditDTOList);
         return Result.success();
     }
 
     @Operation(summary = "加入会议", description = "通过他人的邀请链接或填写会议号")
-    @PostMapping("/join/{id}")
-    public Result<?> join(@PathVariable String id) {
-        meetingService.join(id);
+    @PostMapping("/join/{meetingId}")
+    public Result<?> joinMeeting(@PathVariable String meetingId) {
+        meetingService.join(meetingId);
         return Result.success();
     }
 
     @Operation(summary = "退出会议")
-    @PostMapping("/leave/{id}")
-    public Result<?> leave(@PathVariable String id) {
-        meetingService.leave(id);
+    @PostMapping("/leave/{meetingId}")
+    public Result<?> leaveMeeting(@PathVariable String meetingId) {
+        meetingService.leave(meetingId);
         return Result.success();
     }
 
     @Operation(summary = "解散会议")
-    @DeleteMapping("/del/{id}")
-    public Result<?> del(@PathVariable String id) {
-        meetingService.del(id);
+    @DeleteMapping("/del/{meetingId}")
+    public Result<?> delMeeting(@PathVariable String meetingId) {
+        meetingService.del(meetingId);
         return Result.success();
     }
 }
