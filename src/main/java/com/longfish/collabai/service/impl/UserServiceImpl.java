@@ -379,7 +379,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         User result = getById(BaseContext.getCurrentId());
 
-        if (!codeUtil.get(phoneBindDTO.getPhone()).equals(phoneBindDTO.getCode())) {
+        String code = codeUtil.get(phoneBindDTO.getPhone());
+        if (code == null || !code.equals(phoneBindDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
         if (lambdaQuery().eq(User::getPhone, phoneBindDTO.getPhone()).exists()) {
