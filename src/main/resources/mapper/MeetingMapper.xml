@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="title" property="title" />
         <result column="holder_id" property="holderId" />
-        <result column="holder_name" property="holderName" />
         <result column="start_time" property="startTime" />
         <result column="end_time" property="endTime" />
         <result column="md_content" property="mdContent" />

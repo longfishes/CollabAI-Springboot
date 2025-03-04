@@ -35,8 +35,6 @@ public class Meeting implements Serializable {
 
     private Long holderId;
 
-    private String holderName;
-
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;

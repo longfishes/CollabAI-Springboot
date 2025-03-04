@@ -14,11 +14,13 @@ import com.longfish.collabai.pojo.dto.MeetingEditDTO;
 import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.pojo.entity.MeetingUser;
+import com.longfish.collabai.pojo.entity.User;
 import com.longfish.collabai.pojo.vo.MeetingAbsVO;
 import com.longfish.collabai.pojo.vo.MeetingUserVO;
 import com.longfish.collabai.pojo.vo.MeetingVO;
 import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.service.IMeetingUserService;
+import com.longfish.collabai.service.IUserService;
 import com.longfish.collabai.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,10 +48,12 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     @Autowired
     private MeetingUserMapper meetingUserMapper;
 
+    @Autowired
+    private IUserService userService;
+
     @Override
     public void createNew(MeetingDTO meetingDTO) {
         Long currentId = BaseContext.getCurrentId();
-        String currentName = BaseContext.getCurrentName();
 
         // 检查开始时间和结束时间的合法性
         LocalDateTime startTime = meetingDTO.getStartTime();
@@ -65,7 +69,6 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
         Meeting meeting = BeanUtil.copyProperties(meetingDTO, Meeting.class);
         meeting.setHolderId(currentId)
-                .setHolderName(currentName)
                 .setCreateTime(now);
         String meetingId = MD5Util.gen(meeting);
         meeting.setId(meetingId);
@@ -152,8 +155,12 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
 
+        User holder = userService.getById(meeting.getHolderId());
+
         return BeanUtil.copyProperties(meeting, MeetingVO.class)
-                .setIsHolder(currentId.equals(meeting.getHolderId()));
+                .setIsHolder(currentId.equals(meeting.getHolderId()))
+                .setHolderName(holder.getNickname())
+                .setHolderAvatar(holder.getAvatar());
     }
 
     @Override

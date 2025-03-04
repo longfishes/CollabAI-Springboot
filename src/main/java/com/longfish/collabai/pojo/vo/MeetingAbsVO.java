@@ -24,9 +24,6 @@ public class MeetingAbsVO {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "ai交流", description = "会议主题")
     private String title;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "登录用户", description = "主持人")
-    private String holderName;
-
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
     private Boolean isHolder;
 
