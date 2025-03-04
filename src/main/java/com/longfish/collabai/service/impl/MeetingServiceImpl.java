@@ -176,6 +176,9 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         if (flag[1]) {
             throw new BizException("不能有多个创建者");
         }
+        if (!flag[0]) {
+            throw new BizException("至少有一个创建者");
+        }
 
         meetingUserService.remove(
                 new LambdaQueryWrapper<MeetingUser>().eq(MeetingUser::getMeetingId, id)

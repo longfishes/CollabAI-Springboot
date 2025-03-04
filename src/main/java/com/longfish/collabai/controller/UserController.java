@@ -140,7 +140,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "绑定手机", parameters = {@Parameter(
+    @Operation(summary = "绑定或修改手机", parameters = {@Parameter(
             name = TOKEN_NAME, required = true,
             in = ParameterIn.HEADER,
             description = HEADER_ADVICE,
@@ -151,7 +151,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "绑定邮箱", parameters = {@Parameter(
+    @Operation(summary = "绑定或修改邮箱", parameters = {@Parameter(
             name = TOKEN_NAME, required = true,
             in = ParameterIn.HEADER,
             description = HEADER_ADVICE,

@@ -136,6 +136,12 @@
 			<artifactId>minio</artifactId>
 			<version>8.4.1</version>
 		</dependency>
+<!--		websocket客户端-->
+<!--		<dependency>-->
+<!--			<groupId>org.java-websocket</groupId>-->
+<!--			<artifactId>Java-WebSocket</artifactId>-->
+<!--			<version>1.5.2</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

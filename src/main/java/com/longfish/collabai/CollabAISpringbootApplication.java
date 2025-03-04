@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.concurrent.TimeUnit;
+
 @MapperScan("com.longfish.collabai.mapper")
 @EnableScheduling
 @EnableTransactionManagement
@@ -26,7 +28,11 @@ public class CollabAISpringbootApplication {
 
 	@Bean
 	public OkHttpClient okHttpClient() {
-		return new OkHttpClient().newBuilder().build();
+		return new OkHttpClient().newBuilder()
+				.connectTimeout(60, TimeUnit.SECONDS)
+				.writeTimeout(60, TimeUnit.SECONDS)
+				.readTimeout(60, TimeUnit.SECONDS)
+				.build();
 	}
 
 }

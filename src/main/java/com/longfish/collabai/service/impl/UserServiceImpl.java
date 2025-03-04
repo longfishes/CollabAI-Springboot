@@ -378,9 +378,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.FORMAT_ERROR);
         }
         User result = getById(BaseContext.getCurrentId());
-        if (result.getPhone() != null) {
-            throw new BizException(StatusCodeEnum.PHONE_EXIST);
-        }
+
         if (!codeUtil.get(phoneBindDTO.getPhone()).equals(phoneBindDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
@@ -406,9 +404,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.FORMAT_ERROR);
         }
         User result = getById(BaseContext.getCurrentId());
-        if (result.getEmail() != null) {
-            throw new BizException(StatusCodeEnum.EMAIL_EXIST);
-        }
 
         String code = codeUtil.get(emailBindDTO.getEmail());
         if (code == null || !code.equals(emailBindDTO.getCode())) {
