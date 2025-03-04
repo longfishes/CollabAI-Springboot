@@ -1,18 +1,23 @@
 package com.longfish.collabai.controller;
 
 import com.longfish.collabai.pojo.Result;
+import com.longfish.collabai.service.AIMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/ai")
 @Tag(name = "AI消息相关")
 public class AIMessageController {
 
-    @Operation(summary = "test")
-    @GetMapping("/test")
-    public Result<?> test() {
+    @Autowired
+    private AIMessageService aiMessageService;
+
+    @Operation(summary = "总结会议")
+    @PostMapping("/mt/summarize")
+    public Result<?> summarize() {
         return Result.success();
     }
 }

@@ -41,6 +41,8 @@ public class Meeting implements Serializable {
 
     private LocalDateTime endTime;
 
+    private String speechText;
+
     private String mdContent;
 
     private String aiSummary;

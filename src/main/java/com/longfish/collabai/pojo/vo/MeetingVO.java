@@ -47,6 +47,9 @@ public class MeetingVO {
             example = "https://example.com/file", description = "封面图片url")
     private String coverImg;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "今天，会议的主题是", description = "语音转写内容")
+    private String speechText;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "### 标题", description = "会议md内容")
     private String mdContent;
 
