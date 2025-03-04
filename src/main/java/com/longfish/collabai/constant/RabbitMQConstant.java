@@ -9,4 +9,8 @@ public interface RabbitMQConstant {
     String PHONE_QUEUE = "collabai.phone.queue";
 
     String PHONE_EXCHANGE = "collabai.phone.exchange";
+
+    String AI_SUMMARIZE_QUEUE = "collabai.summarize.queue";
+
+    String AI_SUMMARIZE_EXCHANGE = "collabai.summarize.EXCHANGE";
 }

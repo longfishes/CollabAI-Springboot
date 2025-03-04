@@ -1,5 +1,6 @@
 package com.longfish.collabai.util;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.longfish.collabai.properties.AIProperties;
 import lombok.SneakyThrows;
@@ -25,13 +26,13 @@ public class RequestUtil {
     private AIProperties aiProperties;
 
     @SneakyThrows
-    public void summarySth(String message) {
+    public String summarySth(String message) {
         MediaType mediaType = MediaType.parse("application/json");
 
         // 创建消息内容
         Map<String, String> messageContent = new HashMap<>();
         messageContent.put("role", "user");
-        messageContent.put("content", "帮我总结一下这份文档：" + message);
+        messageContent.put("content", "帮我条理清晰地总结以下内容：\n" + message);
 
         List<Map<String, String>> messageList = new ArrayList<>();
         messageList.add(messageContent);
@@ -53,7 +54,8 @@ public class RequestUtil {
                 .addHeader("Content-Type", APPLICATION_JSON)
                 .build();
         Response response = okHttpClient.newCall(request).execute();
-        System.out.println(Objects.requireNonNull(response.body()).string());
+        return (String) (((Map) (((Map) (JSON.parseObject(Objects.requireNonNull(response.body()).string(), Map.class)
+                .get("data"))).get("message"))).get("content"));
     }
 
     public static String getSign(String key, String secret) {

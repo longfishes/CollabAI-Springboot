@@ -42,4 +42,19 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(phoneQueue()).to(phoneExchange());
     }
 
+    @Bean
+    public Queue summaryQueue() {
+        return new Queue(AI_SUMMARIZE_QUEUE, true);
+    }
+
+    @Bean
+    public FanoutExchange summaryExchange() {
+        return new FanoutExchange(AI_SUMMARIZE_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Binding bindingSummaryDirect() {
+        return BindingBuilder.bind(summaryQueue()).to(summaryExchange());
+    }
+
 }

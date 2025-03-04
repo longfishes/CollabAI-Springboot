@@ -1,17 +1,15 @@
 package com.longfish.collabai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.properties.AIProperties;
-import okhttp3.*;
+import com.longfish.collabai.service.IMeetingService;
+import com.longfish.collabai.util.RequestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.longfish.collabai.util.RequestUtil.getSign;
 
@@ -19,41 +17,34 @@ import static com.longfish.collabai.util.RequestUtil.getSign;
 class CollabAISpringbootApplicationTests {
 
     @Autowired
-    private OkHttpClient okHttpClient;
+    private RequestUtil requestUtil;
 
     @Autowired
     private AIProperties aiProperties;
 
+    @Autowired
+    private IMeetingService meetingService;
+
     @Test
-    public void testAiReq() throws IOException {
-        MediaType mediaType = MediaType.parse("application/json");
+    public void testQueryStartMeeting() {
+        LocalDateTime now = LocalDateTime.now();
 
-        // 创建消息内容
-        Map<String, String> messageContent = new HashMap<>();
-        messageContent.put("role", "user");
-        messageContent.put("content", "帮我总结一下这份文档");
+        // 查询所有正在进行的会议
+        List<Meeting> ongoingMeetings = meetingService.lambdaQuery()
+                .le(Meeting::getStartTime, now)
+                .ge(Meeting::getEndTime, now)
+                .list();
 
-        ArrayList<Map<String, String>> messageList = new ArrayList<>();
-        messageList.add(messageContent);
+        ongoingMeetings.forEach(meeting -> {
+            System.out.println("正在进行的会议: " + meeting.getTitle() +
+                    ", 开始时间: " + meeting.getStartTime() + ", 结束时间: " + meeting.getEndTime());
+        });
+    }
 
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("message", messageList);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(requestBodyMap);
-
-        RequestBody body = RequestBody.create(mediaType, jsonBody);
-        Request request = new Request.Builder()
-                .url(aiProperties.getBaseUrl() + "/open/api/v1/chat")
-                .method("POST", body)
-                .addHeader("appKey", aiProperties.getAppKey())
-                .addHeader("sign", Objects.requireNonNull(getSign(aiProperties.getAppKey(),
-                        aiProperties.getAppSecret())))
-                .addHeader("User-Agent", "Apifox/1.0.0 (https://apifox.com)")
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = okHttpClient.newCall(request).execute();
-        System.out.println(Objects.requireNonNull(response.body()).string());
+    @Test
+    public void testAiReq() {
+        String res = requestUtil.summarySth("content");
+        System.out.println(res);
     }
 
     @Test
