@@ -227,7 +227,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         code = "114514";
 
         Map<String, Object> map = new HashMap<>();
-        map.put("content", "您的验证码为" + code + "，有效期15分钟，请不要告诉他人哦！");
+        map.put("verificationCode", code);
 
         if (isEmail) {
             EmailDTO emailDTO = EmailDTO.builder()
