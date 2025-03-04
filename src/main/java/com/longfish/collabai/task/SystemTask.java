@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SystemTask {
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void heartBeat() {
     }
 }
