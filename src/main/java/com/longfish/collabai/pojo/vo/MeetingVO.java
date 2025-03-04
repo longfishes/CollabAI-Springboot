@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.longfish.collabai.constant.CommonConstant.PATTERN;
 
@@ -61,6 +60,4 @@ public class MeetingVO {
     @JsonFormat(pattern = PATTERN)
     private LocalDateTime createTime;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "参与者")
-    private List<MeetingUserVO> participants;
 }
