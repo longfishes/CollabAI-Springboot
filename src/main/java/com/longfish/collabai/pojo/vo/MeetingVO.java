@@ -29,6 +29,9 @@ public class MeetingVO {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "登录用户", description = "主持人")
     private String holderName;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "https://example.com/img", description = "主持人头像")
+    private String holderAvatar;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
     private Boolean isHolder;
 
