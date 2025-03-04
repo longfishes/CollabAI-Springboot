@@ -66,9 +66,9 @@ public class MeetingController {
     }
 
     @Operation(summary = "会议详情")
-    @GetMapping("/{id}")
-    public Result<MeetingVO> detail(@PathVariable String id) {
-        return Result.success(meetingService.detail(id));
+    @GetMapping("/{meetingId}")
+    public Result<MeetingVO> detail(@PathVariable String meetingId) {
+        return Result.success(meetingService.detail(meetingId));
     }
 
     @Operation(summary = "会议成员")
