@@ -12,5 +12,5 @@ public interface RabbitMQConstant {
 
     String AI_SUMMARIZE_QUEUE = "collabai.summarize.queue";
 
-    String AI_SUMMARIZE_EXCHANGE = "collabai.summarize.EXCHANGE";
+    String AI_SUMMARIZE_EXCHANGE = "collabai.summarize.exchange";
 }

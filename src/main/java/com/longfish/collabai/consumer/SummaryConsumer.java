@@ -32,10 +32,8 @@ public class SummaryConsumer {
 
         String content = "会议文档：" + sumDTO.getMdContent() + "会议录音详细记录：" + sumDTO.getSpeechText();
         String summarizeRes = requestUtil.summarySth(content);
-        sumDTO.setAiSummary(summarizeRes);
 
-        Meeting meeting = BeanUtil.copyProperties(sumDTO, Meeting.class);
-
+        Meeting meeting = BeanUtil.copyProperties(sumDTO, Meeting.class).setAiSummary(summarizeRes);
         meetingService.updateById(meeting);
     }
 }

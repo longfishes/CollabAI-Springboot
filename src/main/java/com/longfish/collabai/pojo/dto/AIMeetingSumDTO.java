@@ -17,6 +17,4 @@ public class AIMeetingSumDTO {
 
     private String speechText;
 
-    private String AiSummary;
-
 }
