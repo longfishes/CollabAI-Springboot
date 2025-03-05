@@ -11,13 +11,9 @@ import com.longfish.collabai.pojo.vo.LoginVO;
 import com.longfish.collabai.pojo.vo.UserVO;
 import com.longfish.collabai.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import static com.longfish.collabai.constant.CommonConstant.*;
 
 /**
  * <p>
@@ -56,11 +52,7 @@ public class UserController {
         return Result.success(LoginVO.builder().jwt(userService.codeLogin(lambdaCodeLoginDTO)).build());
     }
 
-    @Operation(summary = "退出登录", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "退出登录")
     @GetMapping("/logout")
     public Result<?> logout() {
         BaseContext.removeCurrent();
@@ -84,11 +76,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "我的信息", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "我的信息")
     @GetMapping("/me")
     public Result<UserVO> me() {
         return Result.success(userService.me());
@@ -107,55 +95,35 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "修改用户信息", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "修改用户信息")
     @PutMapping("/info")
     public Result<?> update(@RequestBody UserInfoDTO userInfoDTO) {
         userService.updateInfo(userInfoDTO);
         return Result.success();
     }
 
-    @Operation(summary = "修改密码", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "修改密码")
     @PutMapping("/password")
     public Result<?> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         userService.editPassword(passwordEditDTO);
         return Result.success();
     }
 
-    @Operation(summary = "修改用户名", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "修改用户名")
     @PutMapping("/username")
     public Result<?> editUsername(@RequestBody UsernameDTO usernameDTO) {
         userService.editUsername(usernameDTO);
         return Result.success();
     }
 
-    @Operation(summary = "绑定或修改手机", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "绑定或修改手机")
     @PutMapping("/phone")
     public Result<?> bindPhone(@RequestBody PhoneBindDTO phoneBindDTO) {
         userService.bindPhone(phoneBindDTO);
         return Result.success();
     }
 
-    @Operation(summary = "绑定或修改邮箱", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = HEADER_ADVICE,
-            example = HEADER_VAR)})
+    @Operation(summary = "绑定或修改邮箱")
     @PutMapping("/email")
     public Result<?> bindEmail(@RequestBody EmailBindDTO emailBindDTO) {
         userService.bindEmail(emailBindDTO);
