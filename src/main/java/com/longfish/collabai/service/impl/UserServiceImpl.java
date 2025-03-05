@@ -291,6 +291,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void updateInfo(UserInfoDTO userInfoDTO) {
         User update = User.builder().build();
 
+        String nickname = userInfoDTO.getNickname();
+        if (!StringUtils.isBlank(nickname) && nickname.length() > 50) {
+            throw new BizException("昵称长度不得超过50个字符");
+        }
+
         String info = userInfoDTO.getInfo();
         if (!StringUtils.isBlank(info) && info.length() > 80) {
             throw new BizException("签名长度不得超过80个字符");
