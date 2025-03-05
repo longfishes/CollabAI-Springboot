@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -292,29 +291,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void updateInfo(UserInfoDTO userInfoDTO) {
         User update = User.builder().build();
 
-        if (!StringUtils.isBlank(userInfoDTO.getNickname())) {
-            update.setNickname(userInfoDTO.getNickname());
+        String info = userInfoDTO.getInfo();
+        if (!StringUtils.isBlank(info) && info.length() > 80) {
+            throw new BizException("签名长度不得超过80个字符");
         }
-        if (!StringUtils.isBlank(userInfoDTO.getAvatar())) {
-            update.setAvatar(userInfoDTO.getAvatar());
+
+        String location = userInfoDTO.getLocation();
+        if (!StringUtils.isBlank(location) && location.length() > 50) {
+            throw new BizException("地址长度不得超过50个字符");
         }
-        if (!StringUtils.isBlank(userInfoDTO.getInfo())) {
-            if (userInfoDTO.getInfo().length() > 80) throw new BizException("签名长度不得超过80个字符");
-            update.setInfo(userInfoDTO.getInfo());
-        }
-        if (userInfoDTO.getGender() != null && userInfoDTO.getGender() > 0 && userInfoDTO.getGender() < 4) {
-            update.setGender(userInfoDTO.getGender());
-        }
-        if (!StringUtils.isBlank(userInfoDTO.getBirthday())) {
-            try {
-                update.setBirthday(LocalDate.parse(userInfoDTO.getBirthday()));
-            } catch (Exception e) {
-                throw new BizException(StatusCodeEnum.DATE_FORMAT_ERROR);
-            }
-        }
-        if (!StringUtils.isBlank(userInfoDTO.getLocation())) {
-            update.setLocation(userInfoDTO.getLocation());
-        }
+
+        BeanUtil.copyProperties(userInfoDTO, update);
 
         update.setId(BaseContext.getCurrentId());
 
