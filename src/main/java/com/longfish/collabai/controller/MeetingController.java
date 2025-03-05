@@ -5,6 +5,7 @@ import com.longfish.collabai.pojo.dto.MeetingDTO;
 import com.longfish.collabai.pojo.dto.MeetingEditDTO;
 import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import com.longfish.collabai.pojo.vo.MeetingAbsVO;
+import com.longfish.collabai.pojo.vo.MeetingShareVO;
 import com.longfish.collabai.pojo.vo.MeetingUserVO;
 import com.longfish.collabai.pojo.vo.MeetingVO;
 import com.longfish.collabai.service.IMeetingService;
@@ -69,6 +70,12 @@ public class MeetingController {
     @GetMapping("/{meetingId}")
     public Result<MeetingVO> detail(@PathVariable String meetingId) {
         return Result.success(meetingService.detail(meetingId));
+    }
+
+    @Operation(summary = "分享会议详情")
+    @GetMapping("/share/{meetingId}")
+    public Result<MeetingShareVO> shareDetail(@PathVariable String meetingId) {
+        return Result.success(meetingService.shareDetail(meetingId));
     }
 
     @Operation(summary = "会议成员")

@@ -16,6 +16,7 @@ import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.pojo.entity.MeetingUser;
 import com.longfish.collabai.pojo.entity.User;
 import com.longfish.collabai.pojo.vo.MeetingAbsVO;
+import com.longfish.collabai.pojo.vo.MeetingShareVO;
 import com.longfish.collabai.pojo.vo.MeetingUserVO;
 import com.longfish.collabai.pojo.vo.MeetingVO;
 import com.longfish.collabai.service.IMeetingService;
@@ -154,6 +155,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     public MeetingVO detail(String id) {
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException("会议号不存在");
 
         User holder = userService.getById(meeting.getHolderId());
 
@@ -200,10 +202,18 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void join(String id) {
+        Long currentId = BaseContext.getCurrentId();
+        if (meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getUserId, currentId)
+                .eq(MeetingUser::getMeetingId, id)
+                .exists()) {
+            throw new BizException("已经加入了会议");
+        }
+
         meetingUserService.save(
             MeetingUser.builder()
                     .meetingId(id)
-                    .userId(BaseContext.getCurrentId())
+                    .userId(currentId)
                     .authType(MeetingConstant.PARTICIPANT)
                     .build()
         );
@@ -270,5 +280,24 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
         meeting.setEndTime(now);
         updateById(meeting);
+    }
+
+    @Override
+    public MeetingShareVO shareDetail(String meetingId) {
+        Long currentId = BaseContext.getCurrentId();
+        Meeting meeting = getById(meetingId);
+        if (meeting == null) throw new BizException("会议号不存在");
+
+        User holder = userService.getById(meeting.getHolderId());
+
+        boolean isJoined = meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getUserId, currentId)
+                .eq(MeetingUser::getMeetingId, meetingId)
+                .exists();
+
+        return BeanUtil.copyProperties(meeting, MeetingShareVO.class)
+                .setIsJoined(isJoined)
+                .setHolderName(holder.getNickname())
+                .setHolderAvatar(holder.getAvatar());
     }
 }
