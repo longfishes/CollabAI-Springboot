@@ -47,6 +47,8 @@ public enum StatusCodeEnum {
 
     FORBIDDEN(40300, "没有操作权限", 403),
 
+    MEETING_NOT_FOUND(40401, "会议号不存在", 404),
+
     METHOD_NOT_ALLOWED(40500, "请求方法不允许", 405),
 
     SYSTEM_ERROR(50000, "系统异常", 500),

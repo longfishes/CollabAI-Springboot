@@ -91,6 +91,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             throw new BizException("会议号不能为空");
         }
         Meeting meeting = getById(meetingId);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
         if (!BaseContext.getCurrentId().equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
@@ -155,7 +156,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     public MeetingVO detail(String id) {
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
-        if (meeting == null) throw new BizException("会议号不存在");
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
         User holder = userService.getById(meeting.getHolderId());
 
@@ -172,7 +173,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void editMember(String id, List<ParticipantsEditDTO> editDTOList) {
-        if (!BaseContext.getCurrentId().equals(getById(id).getHolderId())) {
+        Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
+        if (!BaseContext.getCurrentId().equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
         final boolean[] flag = {false, false};
@@ -203,6 +207,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     @Override
     public void join(String id) {
         Long currentId = BaseContext.getCurrentId();
+
+        Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
         if (meetingUserService.lambdaQuery()
                 .eq(MeetingUser::getUserId, currentId)
                 .eq(MeetingUser::getMeetingId, id)
@@ -222,7 +230,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     @Override
     public void leave(String id) {
         Long currentId = BaseContext.getCurrentId();
-        if (!currentId.equals(getById(id).getHolderId())) {
+        Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
+        if (!currentId.equals(meeting.getHolderId())) {
             throw new BizException("请先转让会议所有权再退出");
         }
         meetingUserService.remove(
@@ -235,7 +246,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     @Override
     public void del(String id) {
         Long currentId = BaseContext.getCurrentId();
-        if (!currentId.equals(getById(id).getHolderId())) {
+        Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
+        if (!currentId.equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
         removeById(id);
@@ -248,6 +262,8 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     public void start(String id) {
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
         if (!currentId.equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
@@ -267,6 +283,8 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     public void stop(String id) {
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
         if (!currentId.equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
@@ -286,7 +304,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     public MeetingShareVO shareDetail(String meetingId) {
         Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(meetingId);
-        if (meeting == null) throw new BizException("会议号不存在");
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
         User holder = userService.getById(meeting.getHolderId());
 

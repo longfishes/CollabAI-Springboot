@@ -28,9 +28,13 @@ public class AIMessageServiceImpl implements AIMessageService {
     @Override
     public void summarizeMeeting(String meetingId) {
         if (meetingId == null) {
-            throw new BizException("会议号不能为空");
+            throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
         }
         Meeting meeting = meetingService.getById(meetingId);
+
+        if (meeting == null) {
+            throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+        }
 
         if (!BaseContext.getCurrentId().equals(meeting.getHolderId())) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
