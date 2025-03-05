@@ -299,6 +299,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             update.setAvatar(userInfoDTO.getAvatar());
         }
         if (!StringUtils.isBlank(userInfoDTO.getInfo())) {
+            if (userInfoDTO.getInfo().length() > 80) throw new BizException("签名长度不得超过80个字符");
             update.setInfo(userInfoDTO.getInfo());
         }
         if (userInfoDTO.getGender() != null && userInfoDTO.getGender() > 0 && userInfoDTO.getGender() < 4) {
