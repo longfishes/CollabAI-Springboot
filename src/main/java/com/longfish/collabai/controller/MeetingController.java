@@ -1,5 +1,6 @@
 package com.longfish.collabai.controller;
 
+import com.longfish.collabai.annotation.NoLogin;
 import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.dto.MeetingDTO;
 import com.longfish.collabai.pojo.dto.MeetingEditDTO;
@@ -74,6 +75,7 @@ public class MeetingController {
 
     @Operation(summary = "分享会议详情")
     @GetMapping("/share/{meetingId}")
+    @NoLogin
     public Result<MeetingShareVO> shareDetail(@PathVariable String meetingId) {
         return Result.success(meetingService.shareDetail(meetingId));
     }
