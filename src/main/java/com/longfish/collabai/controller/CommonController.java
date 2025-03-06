@@ -18,11 +18,11 @@ public class CommonController {
     @Autowired
     private UploadStrategyContext uploadStrategyContext;
 
-    @Operation(summary = "上传文档图片")
-    @PostMapping("/document/img/upload")
-    public Result<UrlVO> uploadDocImg(MultipartFile file) {
+    @Operation(summary = "上传会议封面图片")
+    @PostMapping("/mt/img/upload")
+    public Result<UrlVO> uploadMeetingImg(MultipartFile file) {
         return Result.success(UrlVO.builder()
-                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.DOCUMENT.getPath()))
+                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.MEETING.getPath()))
                 .build());
     }
 

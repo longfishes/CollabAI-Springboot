@@ -9,7 +9,7 @@ public enum FilePathEnum {
 
     AVATAR("avatar/user/", "头像路径"),
 
-    DOCUMENT("document/img/", "文档图片路径");
+    MEETING("meeting/img/", "会议封面路径");
 
     private final String path;
 
