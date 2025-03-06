@@ -138,9 +138,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
                 return m1NotStarted ? -1 : 1;
             }
         }).map(meeting -> {
-            MeetingAbsVO vo = BeanUtil.copyProperties(meeting, MeetingAbsVO.class);
-            vo.setIsHolder(currentId.equals(meeting.getHolderId()));
-            return vo;
+            Long holderId = meeting.getHolderId();
+            return BeanUtil.copyProperties(meeting, MeetingAbsVO.class)
+                    .setIsHolder(currentId.equals(holderId))
+                    .setHolderName(userService.getById(holderId).getNickname());
         }).toList();
     }
 
