@@ -33,4 +33,12 @@ public class CommonController {
                 .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()))
                 .build());
     }
+
+    @Operation(summary = "上传文档图片")
+    @PostMapping("/user/doc/upload")
+    public Result<UrlVO> uploadDocImg(MultipartFile file) {
+        return Result.success(UrlVO.builder()
+                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.DOCUMENT.getPath()))
+                .build());
+    }
 }
