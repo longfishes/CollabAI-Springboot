@@ -4,6 +4,8 @@ public interface CommonConstant {
 
     String PATTERN = "yyyy-MM-dd HH:mm:ss";
 
+    String MEETING_PATTERN = "yyyy-MM-dd HH:mm";
+
     String DATE_PATTERN = "yyyy-MM-dd";
 
     String CODE = "CODE";

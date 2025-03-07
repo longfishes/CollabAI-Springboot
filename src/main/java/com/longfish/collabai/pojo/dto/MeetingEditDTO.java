@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.longfish.collabai.constant.CommonConstant.PATTERN;
+import static com.longfish.collabai.constant.CommonConstant.MEETING_PATTERN;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,15 +27,15 @@ public class MeetingEditDTO {
     private String title;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "2025-04-03 09:30:00", description = "会议开始时间")
+            example = "2025-04-03 09:30", description = "会议开始时间")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = PATTERN)
+    @JsonFormat(pattern = MEETING_PATTERN)
     private LocalDateTime startTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "2025-04-03 10:30:00", description = "会议结束时间")
+            example = "2025-04-03 10:30", description = "会议结束时间")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = PATTERN)
+    @JsonFormat(pattern = MEETING_PATTERN)
     private LocalDateTime endTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "### 标题", description = "会议md内容")

@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+import static com.longfish.collabai.constant.CommonConstant.MEETING_PATTERN;
 import static com.longfish.collabai.constant.CommonConstant.PATTERN;
 
 @NoArgsConstructor
@@ -36,13 +37,13 @@ public class MeetingVO {
     private Boolean isHolder;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "2025-04-03 09:30:00", description = "会议开始时间")
-    @JsonFormat(pattern = PATTERN)
+            example = "2025-04-03 09:30", description = "会议开始时间")
+    @JsonFormat(pattern = MEETING_PATTERN)
     private LocalDateTime startTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "2025-04-03 10:30:00", description = "会议结束时间")
-    @JsonFormat(pattern = PATTERN)
+            example = "2025-04-03 10:30", description = "会议结束时间")
+    @JsonFormat(pattern = MEETING_PATTERN)
     private LocalDateTime endTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,

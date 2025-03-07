@@ -4,10 +4,18 @@ import com.longfish.collabai.constant.MeetingConstant;
 import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LocalTest {
+
+    @Test
+    public void testFormat() {
+        LocalDateTime time = LocalDateTime.parse("2000-11-11 10:00" , DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        System.out.println(time);
+    }
 
     @Test
     public void testMultiHolder() {
