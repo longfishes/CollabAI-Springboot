@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.longfish.collabai.constant.RabbitMQConstant;
+import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.RecognizeDTO;
 import com.longfish.collabai.service.RedisService;
@@ -176,16 +177,13 @@ public class RTASRApp {
         } catch (Exception e) {
             return message;
         }
+
         String result = resultBuilder.toString();
-
-        // TODO 添加用户名标识
-//        String currentName = BaseContext.getCurrentName();
-//        result = currentName + ": " + result;
-
+        String currentName = BaseContext.getCurrentName();
         String meetingId = (String) redisService.get(REDIS_KEY_MEETING_ID);
 
         RecognizeDTO recognizeDTO = RecognizeDTO.builder()
-                .content(result)
+                .content(currentName + ": " + result)
                 .meetingId(meetingId)
                 .build();
 
@@ -194,6 +192,6 @@ public class RTASRApp {
                 "*",
                 new Message(JSON.toJSONBytes(recognizeDTO), new MessageProperties())
         );
-        return "rl: " + rl + "\tresult: " + resultBuilder;
+        return "rl: " + rl + "\tresult: " + result;
     }
 }
