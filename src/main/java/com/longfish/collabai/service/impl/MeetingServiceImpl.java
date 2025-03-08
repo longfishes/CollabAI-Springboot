@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -115,6 +116,11 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         }
         if (endTime.isBefore(startTime)) {
             throw new BizException(StatusCodeEnum.END_TIME_ERROR);
+        }
+
+        long diff = endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
+        if (diff > MeetingConstant.MAX_LAST_TIME) {
+            throw new BizException("会议持续时间过长");
         }
 
         updateById(meeting);
@@ -267,11 +273,16 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void start(String id) {
-        Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
         if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
-        if (!currentId.equals(meeting.getHolderId())) {
+        MeetingUser meetingUser = meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getUserId, BaseContext.getCurrentId())
+                .eq(MeetingUser::getMeetingId, id)
+                .one();
+
+        Integer authType = meetingUser.getAuthType();
+        if (!HOLDER.equals(authType) && !OPERATOR.equals(authType)) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
 
@@ -288,11 +299,16 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void stop(String id) {
-        Long currentId = BaseContext.getCurrentId();
         Meeting meeting = getById(id);
         if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
-        if (!currentId.equals(meeting.getHolderId())) {
+        MeetingUser meetingUser = meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getUserId, BaseContext.getCurrentId())
+                .eq(MeetingUser::getMeetingId, id)
+                .one();
+
+        Integer authType = meetingUser.getAuthType();
+        if (!HOLDER.equals(authType) && !OPERATOR.equals(authType)) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
 
