@@ -5,10 +5,7 @@ import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.dto.MeetingDTO;
 import com.longfish.collabai.pojo.dto.MeetingEditDTO;
 import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
-import com.longfish.collabai.pojo.vo.MeetingAbsVO;
-import com.longfish.collabai.pojo.vo.MeetingShareVO;
-import com.longfish.collabai.pojo.vo.MeetingUserVO;
-import com.longfish.collabai.pojo.vo.MeetingVO;
+import com.longfish.collabai.pojo.vo.*;
 import com.longfish.collabai.service.IMeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,6 +68,12 @@ public class MeetingController {
     @GetMapping("/{meetingId}")
     public Result<MeetingVO> detail(@PathVariable String meetingId) {
         return Result.success(meetingService.detail(meetingId));
+    }
+
+    @Operation(summary = "获取我的操作权限")
+    @GetMapping("/auth/{meetingId}")
+    public Result<AuthVO> auth(@PathVariable String meetingId) {
+        return Result.success(meetingService.auth(meetingId));
     }
 
     @Operation(summary = "分享会议详情")

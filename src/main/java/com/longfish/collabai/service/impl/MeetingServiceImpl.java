@@ -15,10 +15,7 @@ import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.pojo.entity.MeetingUser;
 import com.longfish.collabai.pojo.entity.User;
-import com.longfish.collabai.pojo.vo.MeetingAbsVO;
-import com.longfish.collabai.pojo.vo.MeetingShareVO;
-import com.longfish.collabai.pojo.vo.MeetingUserVO;
-import com.longfish.collabai.pojo.vo.MeetingVO;
+import com.longfish.collabai.pojo.vo.*;
 import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.service.IMeetingUserService;
 import com.longfish.collabai.service.IUserService;
@@ -318,5 +315,15 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
                 .setIsJoined(isJoined)
                 .setHolderName(holder.getNickname())
                 .setHolderAvatar(holder.getAvatar());
+    }
+
+    @Override
+    public AuthVO auth(String meetingId) {
+        MeetingUser meetingUser = meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getMeetingId, meetingId)
+                .eq(MeetingUser::getUserId, BaseContext.getCurrentId())
+                .one();
+        if (meetingUser == null) throw new BizException(StatusCodeEnum.FORBIDDEN);
+        return AuthVO.builder().authType(meetingUser.getAuthType()).build();
     }
 }

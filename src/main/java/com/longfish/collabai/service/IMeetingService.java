@@ -5,10 +5,7 @@ import com.longfish.collabai.pojo.dto.MeetingDTO;
 import com.longfish.collabai.pojo.dto.MeetingEditDTO;
 import com.longfish.collabai.pojo.dto.ParticipantsEditDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
-import com.longfish.collabai.pojo.vo.MeetingAbsVO;
-import com.longfish.collabai.pojo.vo.MeetingShareVO;
-import com.longfish.collabai.pojo.vo.MeetingUserVO;
-import com.longfish.collabai.pojo.vo.MeetingVO;
+import com.longfish.collabai.pojo.vo.*;
 
 import java.util.List;
 
@@ -45,4 +42,6 @@ public interface IMeetingService extends IService<Meeting> {
     void stop(String id);
 
     MeetingShareVO shareDetail(String meetingId);
+
+    AuthVO auth(String meetingId);
 }
