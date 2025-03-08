@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.longfish.collabai.constant.MeetingConstant.HOLDER;
+import static com.longfish.collabai.constant.MeetingConstant.OPERATOR;
+
 /**
  * <p>
  *  服务实现类
@@ -76,7 +79,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             MeetingUser.builder()
                 .meetingId(meetingId)
                 .userId(currentId)
-                .authType(MeetingConstant.HOLDER)
+                .authType(HOLDER)
                 .build()
         );
     }
@@ -90,7 +93,13 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         Meeting meeting = getById(meetingId);
         if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
 
-        if (!BaseContext.getCurrentId().equals(meeting.getHolderId())) {
+        MeetingUser meetingUser = meetingUserService.lambdaQuery()
+                .eq(MeetingUser::getUserId, BaseContext.getCurrentId())
+                .eq(MeetingUser::getMeetingId, meetingEditDTO.getId())
+                .one();
+
+        Integer authType = meetingUser.getAuthType();
+        if (!HOLDER.equals(authType) && !OPERATOR.equals(authType)) {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
 
@@ -179,7 +188,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         }
         final boolean[] flag = {false, false};
         editDTOList.forEach(e -> {
-            if (e.getAuthType().equals(MeetingConstant.HOLDER)) {
+            if (e.getAuthType().equals(HOLDER)) {
                 if (flag[0]) flag[1] = true;
                 flag[0] = true;
             }
