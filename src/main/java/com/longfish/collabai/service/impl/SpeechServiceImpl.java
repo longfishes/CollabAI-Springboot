@@ -2,6 +2,7 @@ package com.longfish.collabai.service.impl;
 
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.service.IMeetingService;
+import com.longfish.collabai.service.RedisService;
 import com.longfish.collabai.service.SpeechService;
 import com.longfish.collabai.ttl.WebSocketManager;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import static com.longfish.collabai.constant.DatabaseConstant.REDIS_KEY_MEETING_ID;
 
 @Service
 @Slf4j
@@ -20,6 +23,9 @@ public class SpeechServiceImpl implements SpeechService {
 
     @Autowired
     private IMeetingService meetingService;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public void recognizeSpeech(byte[] audioData, String meetingId) {
@@ -48,6 +54,8 @@ public class SpeechServiceImpl implements SpeechService {
             log.error("处理音频数据失败", e);
             throw new BizException("处理音频数据失败：" + e.getMessage());
         }
+
+        redisService.set(REDIS_KEY_MEETING_ID, meetingId);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.longfish.collabai.util.IpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Component;
@@ -21,24 +22,26 @@ import static com.longfish.collabai.constant.CommonConstant.APPLICATION_JSON_UTF
 
 @Slf4j
 @Component
-@SuppressWarnings("all")
 public class AccessLimitInterceptor implements HandlerInterceptor {
 
     @Autowired
     private RedisService redisService;
 
     @Override
-    public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler) throws Exception {
+    public boolean preHandle(
+            @NotNull HttpServletRequest req,
+            @NotNull HttpServletResponse resp,
+            @NotNull Object handler) throws Exception {
         if (handler instanceof HandlerMethod handlerMethod) {
             AccessLimit accessLimit = handlerMethod.getMethodAnnotation(AccessLimit.class);
             if (accessLimit != null) {
                 long seconds = accessLimit.seconds();
                 int maxCount = accessLimit.maxCount();
-                String key = IpUtil.getIpAddress(httpServletRequest) + "-" + handlerMethod.getMethod().getName();
+                String key = IpUtil.getIpAddress(req) + "-" + handlerMethod.getMethod().getName();
                 try {
                     long q = redisService.incrExpire(key, seconds);
                     if (q > maxCount) {
-                        render(httpServletResponse, Result.error("请求过于频繁，" + seconds + "秒后再试"));
+                        render(resp, Result.error("请求过于频繁，" + seconds + "秒后再试"));
                         log.warn(key + "请求次数超过每" + seconds + "秒" + maxCount + "次");
                         return false;
                     }

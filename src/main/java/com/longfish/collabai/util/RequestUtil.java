@@ -43,6 +43,7 @@ public class RequestUtil {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(requestBodyMap);
 
+        @SuppressWarnings("deprecation")
         RequestBody body = RequestBody.create(mediaType, jsonBody);
         Request request = new Request.Builder()
                 .url(aiProperties.getBaseUrl() + "/open/api/v1/chat")

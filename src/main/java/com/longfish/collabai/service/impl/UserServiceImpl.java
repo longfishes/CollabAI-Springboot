@@ -236,13 +236,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     .commentMap(map)
                     .code(code)
                     .build();
-            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConstant.EMAIL_EXCHANGE,
+                    "*",
+                    new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
         } else {
             SmsDTO smsDTO = SmsDTO.builder()
                     .phone(username)
                     .code(code)
                     .build();
-            rabbitTemplate.convertAndSend(RabbitMQConstant.PHONE_EXCHANGE, "*", new Message(JSON.toJSONBytes(smsDTO), new MessageProperties())
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConstant.PHONE_EXCHANGE,
+                    "*",
+                    new Message(JSON.toJSONBytes(smsDTO), new MessageProperties())
             );
         }
     }

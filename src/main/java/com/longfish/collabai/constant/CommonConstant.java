@@ -8,8 +8,6 @@ public interface CommonConstant {
 
     String DATE_PATTERN = "yyyy-MM-dd";
 
-    String CODE = "CODE";
-
     String USER_ID = "userId";
 
     String USER_NAME = "userName";

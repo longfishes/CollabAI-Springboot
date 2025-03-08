@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
-import static com.longfish.collabai.constant.CommonConstant.CODE;
+import static com.longfish.collabai.constant.DatabaseConstant.REDIS_KEY_CODE;
 
 @Component
 public class CodeUtil {
@@ -27,11 +27,11 @@ public class CodeUtil {
     }
 
     public void insert(String username, String code) {
-        redisService.set(CODE + "::" + username, code, 15 * 60);
+        redisService.set(REDIS_KEY_CODE + "::" + username, code, 15 * 60);
     }
 
     public String get(String username) {
-        Object code = redisService.get(CODE + "::" + username);
+        Object code = redisService.get(REDIS_KEY_CODE + "::" + username);
         if (code != null) return (String) code;
         return null;
     }

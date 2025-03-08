@@ -3,10 +3,16 @@ package com.longfish.collabai.ttl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.longfish.collabai.constant.RabbitMQConstant;
+import com.longfish.collabai.exception.BizException;
+import com.longfish.collabai.pojo.dto.RecognizeDTO;
+import com.longfish.collabai.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +28,8 @@ import java.security.cert.X509Certificate;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+import static com.longfish.collabai.constant.DatabaseConstant.REDIS_KEY_MEETING_ID;
+
 /**
  * 实时转写调用
  *
@@ -34,6 +42,9 @@ public class RTASRApp {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private RedisService redisService;
+
     // 生成握手参数
     public String getHandShakeParams(String appId, String secretKey) {
         String ts = System.currentTimeMillis() / 1000 + "";
@@ -44,14 +55,13 @@ public class RTASRApp {
             return "?appid=" + appId + "&ts=" + ts + "&signa=" +
                     URLEncoder.encode(signa, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new BizException("RTASRApp : 生成握手参数失败");
         }
-        return "";
     }
 
     public void send(WebSocketClient client, byte[] bytes) {
         if (client.isClosed()) {
-            throw new RuntimeException("client connect closed!");
+            throw new BizException("RTASRApp : client connect closed!");
         }
         client.send(bytes);
     }
@@ -98,8 +108,7 @@ public class RTASRApp {
 
         @Override
         public void onError(Exception e) {
-            log.error("连接发生错误：" + e.getMessage());
-            e.printStackTrace();
+            log.error("RTASRApp : 连接发生错误 : " + e.getMessage());
         }
 
         @Override
@@ -135,7 +144,7 @@ public class RTASRApp {
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 appClient.setSocket(sc.getSocketFactory().createSocket());
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new BizException("RTASRApp trustAllHosts : " + e.getMessage());
             }
         }
     }
@@ -167,7 +176,24 @@ public class RTASRApp {
         } catch (Exception e) {
             return message;
         }
+        String result = resultBuilder.toString();
 
+        // TODO 添加用户名标识
+//        String currentName = BaseContext.getCurrentName();
+//        result = currentName + ": " + result;
+
+        String meetingId = (String) redisService.get(REDIS_KEY_MEETING_ID);
+
+        RecognizeDTO recognizeDTO = RecognizeDTO.builder()
+                .content(result)
+                .meetingId(meetingId)
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstant.RECOGNIZE_EXCHANGE,
+                "*",
+                new Message(JSON.toJSONBytes(recognizeDTO), new MessageProperties())
+        );
         return "rl: " + rl + "\tresult: " + resultBuilder;
     }
 }

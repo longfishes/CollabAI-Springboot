@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -28,8 +29,10 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     private String tokenName;
 
     @Override
-    @SuppressWarnings("all")
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) {
+    public boolean preHandle(
+            @NotNull HttpServletRequest req,
+            @NotNull HttpServletResponse resp,
+            @NotNull Object handler) {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }

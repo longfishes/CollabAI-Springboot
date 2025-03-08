@@ -14,4 +14,8 @@ public interface DatabaseConstant {
 
     String AI_SESSION = "ai_session";
 
+    String REDIS_KEY_CODE = "CODE";
+
+    String REDIS_KEY_MEETING_ID = "recognize:meeting_id";
+
 }

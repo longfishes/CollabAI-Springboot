@@ -1,5 +1,7 @@
 package com.longfish.collabai.consumer;
 
+import com.alibaba.fastjson.JSON;
+import com.longfish.collabai.pojo.dto.RecognizeDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -14,7 +16,8 @@ public class RecognizeConsumer {
 
     @RabbitHandler
     public void process(byte[] data) {
-        log.info(new String(data));
+        RecognizeDTO recognizeDTO = JSON.parseObject(new String(data), RecognizeDTO.class);
+        log.debug(recognizeDTO.getContent());
     }
 
 }
