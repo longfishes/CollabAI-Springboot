@@ -57,4 +57,19 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(summaryQueue()).to(summaryExchange());
     }
 
+    @Bean
+    public Queue recognizeQueue() {
+        return new Queue(RECOGNIZE_QUEUE, true);
+    }
+
+    @Bean
+    public FanoutExchange recognizeExchange() {
+        return new FanoutExchange(RECOGNIZE_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Binding bindingRecognizeDirect() {
+        return BindingBuilder.bind(recognizeQueue()).to(recognizeExchange());
+    }
+
 }

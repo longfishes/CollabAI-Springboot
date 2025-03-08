@@ -1,58 +1,37 @@
 package com.longfish.collabai.controller;
 
-import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.Result;
-import com.longfish.collabai.ttl.WebSocketManager;
+import com.longfish.collabai.pojo.vo.SpeechVO;
+import com.longfish.collabai.service.SpeechService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/speech")
-@Slf4j
 @Tag(name = "语音识别")
 public class SpeechController {
 
     @Autowired
-    private WebSocketManager webSocketManager;
+    private SpeechService speechService;
 
-    @PostMapping("/recognize")
-    public Result<?> recognizeSpeech(@RequestBody byte[] audioData) {
-        try {
-            // 验证音频数据
-            if (audioData.length % 2 != 0) {
-                return Result.error("无效的PCM数据：数据长度必须是2的倍数");
-            }
+    @Operation(summary = "同步识别结果")
+    @GetMapping("/sync/{meetingId}")
+    public Result<SpeechVO> syncSpeechText(@PathVariable String meetingId) {
+        return Result.success(
+            SpeechVO.builder()
+                .speechText(speechService.syncSpeechText(meetingId))
+                .build()
+        );
+    }
 
-            // 打印音频数据的基本信息
-            log.debug("接收到音频数据: {} 字节, {} 个采样点",
-                     audioData.length,
-                     audioData.length / 2);
-
-            // 验证采样值范围
-            ByteBuffer buffer = ByteBuffer.wrap(audioData).order(ByteOrder.LITTLE_ENDIAN);
-            int sampleCount = 0;
-
-            while (buffer.hasRemaining() && sampleCount < 10) {  // 只检查前10个样本
-                sampleCount++;
-            }
-
-            boolean success = webSocketManager.sendAudioData(audioData);
-            if (success) {
-                return Result.success("音频数据已接收");
-            } else {
-                throw new BizException("语音服务连接失败，请稍后重试");
-            }
-        } catch (Exception e) {
-            log.error("处理音频数据失败", e);
-            throw new BizException("处理音频数据失败：" + e.getMessage());
-        }
+    @Operation(summary = "上传识别音频")
+    @PostMapping("/recognize/{meetingId}")
+    public Result<?> recognizeSpeech(
+            @RequestBody byte[] audioData,
+            @PathVariable String meetingId) {
+        speechService.recognizeSpeech(audioData, meetingId);
+        return Result.success();
     }
 }
