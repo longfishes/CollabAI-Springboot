@@ -1,5 +1,6 @@
 package com.longfish.collabai.controller;
 
+import com.longfish.collabai.annotation.NoLogin;
 import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.vo.SpeechVO;
 import com.longfish.collabai.service.SpeechService;
@@ -28,6 +29,7 @@ public class SpeechController {
 
     @Operation(summary = "上传识别音频")
     @PostMapping("/recognize/{meetingId}")
+    @NoLogin
     public Result<?> recognizeSpeech(
             @RequestBody byte[] audioData,
             @PathVariable String meetingId) {

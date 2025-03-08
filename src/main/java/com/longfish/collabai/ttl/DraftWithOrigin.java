@@ -17,7 +17,6 @@ public class DraftWithOrigin extends Draft_17 {
 
     @Override
     public Draft copyInstance() {
-        System.out.println(originUrl);
         return new DraftWithOrigin(originUrl);
     }
 

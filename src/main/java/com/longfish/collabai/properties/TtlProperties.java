@@ -13,4 +13,8 @@ public class TtlProperties {
 
     private String secretKey;
 
+    private String wsBaseUrl;
+
+    private String httpBaseUrl;
+
 }

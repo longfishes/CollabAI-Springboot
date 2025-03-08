@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class WebSocketManager {
+
+    private final RTASRApp rtasrApp;
     private RTASRApp.MyWebSocketClient client;
     private final Object lock = new Object();
     private volatile boolean isConnected = false;
@@ -23,6 +25,11 @@ public class WebSocketManager {
 
     @Autowired
     private TtlProperties ttlProperties;
+
+    @Autowired
+    public WebSocketManager(RTASRApp rtasrApp) {
+        this.rtasrApp = rtasrApp;
+    }
 
     @Scheduled(fixedRate = 1000)
     public void checkConnection() {
@@ -50,13 +57,13 @@ public class WebSocketManager {
                     client = null;
                 }
 
-                URI url = new URI(RTASRApp.BASE_URL +
-                        RTASRApp.getHandShakeParams(ttlProperties.getAppId(), ttlProperties.getSecretKey()));
-                DraftWithOrigin draft = new DraftWithOrigin(RTASRApp.ORIGIN);
+                URI url = new URI(ttlProperties.getWsBaseUrl() +
+                        rtasrApp.getHandShakeParams(ttlProperties.getAppId(), ttlProperties.getSecretKey()));
+                DraftWithOrigin draft = new DraftWithOrigin(ttlProperties.getHttpBaseUrl());
                 CountDownLatch handshakeSuccess = new CountDownLatch(1);
                 CountDownLatch connectClose = new CountDownLatch(1);
 
-                client = new RTASRApp.MyWebSocketClient(url, draft, handshakeSuccess, connectClose);
+                client = rtasrApp.new MyWebSocketClient(url, draft, handshakeSuccess, connectClose);
                 client.connect();
 
                 int attempts = 0;
@@ -94,7 +101,7 @@ public class WebSocketManager {
             }
 
             try {
-                RTASRApp.send(client, audioData);
+                rtasrApp.send(client, audioData);
                 lastSendTime = System.currentTimeMillis();
                 return true;
             } catch (Exception e) {
