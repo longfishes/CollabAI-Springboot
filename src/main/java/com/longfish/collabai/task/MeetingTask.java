@@ -1,9 +1,6 @@
 package com.longfish.collabai.task;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSON;
 import com.longfish.collabai.constant.RabbitMQConstant;
-import com.longfish.collabai.pojo.dto.AIMeetingSumDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.service.IMeetingService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +37,10 @@ public class MeetingTask {
                 .ge(Meeting::getEndTime, now)
                 .list();
 
-        ongoingMeetings.forEach(meeting -> {
-            AIMeetingSumDTO dto = BeanUtil.copyProperties(meeting, AIMeetingSumDTO.class);
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConstant.AI_SUMMARIZE_EXCHANGE,
-                    "*",
-                    new Message(JSON.toJSONBytes(dto), new MessageProperties())
-            );
-        });
+        ongoingMeetings.forEach(meeting -> rabbitTemplate.convertAndSend(
+                RabbitMQConstant.AI_SUMMARIZE_EXCHANGE,
+                "*",
+                new Message(meeting.getId().getBytes(), new MessageProperties())
+        ));
     }
 }

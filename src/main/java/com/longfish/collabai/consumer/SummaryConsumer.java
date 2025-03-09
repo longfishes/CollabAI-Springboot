@@ -1,8 +1,7 @@
 package com.longfish.collabai.consumer;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSON;
-import com.longfish.collabai.pojo.dto.AIMeetingSumDTO;
+import com.longfish.collabai.enums.StatusCodeEnum;
+import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.util.RequestUtil;
@@ -27,13 +26,18 @@ public class SummaryConsumer {
 
     @RabbitHandler
     public void process(byte[] data) {
-        AIMeetingSumDTO sumDTO = JSON.parseObject(new String(data), AIMeetingSumDTO.class);
-        log.info("开始ai总结会议：{}", sumDTO.getId());
+        String meetingId = new String(data);
+        log.info("开始ai总结会议：{}", meetingId);
 
-        String content = "会议文档：" + sumDTO.getMdContent() + "会议录音详细记录：" + sumDTO.getSpeechText();
+        Meeting meeting = meetingService.getById(meetingId);
+        if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
+        String content =  "会议主题：" + meeting.getTitle() +
+                "\n会议文档：" + meeting.getMdContent() +
+                "\n会议录音详细记录：" + meeting.getSpeechText();
         String summarizeRes = requestUtil.summarySth(content);
 
-        Meeting meeting = BeanUtil.copyProperties(sumDTO, Meeting.class).setAiSummary(summarizeRes);
+        meeting.setAiSummary(summarizeRes);
         meetingService.updateById(meeting);
     }
 }

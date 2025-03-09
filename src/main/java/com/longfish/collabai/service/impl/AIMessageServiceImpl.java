@@ -1,12 +1,9 @@
 package com.longfish.collabai.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSON;
 import com.longfish.collabai.constant.RabbitMQConstant;
 import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
-import com.longfish.collabai.pojo.dto.AIMeetingSumDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.service.AIMessageService;
 import com.longfish.collabai.service.IMeetingService;
@@ -40,12 +37,10 @@ public class AIMessageServiceImpl implements AIMessageService {
             throw new BizException(StatusCodeEnum.FORBIDDEN);
         }
 
-        AIMeetingSumDTO dto = BeanUtil.copyProperties(meeting, AIMeetingSumDTO.class);
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstant.AI_SUMMARIZE_EXCHANGE,
                 "*",
-                new Message(JSON.toJSONBytes(dto), new MessageProperties())
+                new Message(meetingId.getBytes(), new MessageProperties())
         );
     }
 }
