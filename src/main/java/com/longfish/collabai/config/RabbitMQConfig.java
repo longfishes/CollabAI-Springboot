@@ -44,12 +44,12 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue summaryQueue() {
-        return new Queue(AI_SUMMARIZE_QUEUE, true);
+        return new Queue(SUMMARIZE_QUEUE, true);
     }
 
     @Bean
     public FanoutExchange summaryExchange() {
-        return new FanoutExchange(AI_SUMMARIZE_EXCHANGE, true, false);
+        return new FanoutExchange(SUMMARIZE_EXCHANGE, true, false);
     }
 
     @Bean

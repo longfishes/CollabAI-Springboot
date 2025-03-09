@@ -38,7 +38,7 @@ public class AIMessageServiceImpl implements AIMessageService {
         }
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConstant.AI_SUMMARIZE_EXCHANGE,
+                RabbitMQConstant.SUMMARIZE_EXCHANGE,
                 "*",
                 new Message(meetingId.getBytes(), new MessageProperties())
         );

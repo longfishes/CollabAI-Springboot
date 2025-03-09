@@ -11,11 +11,11 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.longfish.collabai.constant.RabbitMQConstant.AI_SUMMARIZE_QUEUE;
+import static com.longfish.collabai.constant.RabbitMQConstant.SUMMARIZE_QUEUE;
 
 @Slf4j
 @Component
-@RabbitListener(queues = AI_SUMMARIZE_QUEUE)
+@RabbitListener(queues = SUMMARIZE_QUEUE)
 public class SummaryConsumer {
 
     @Autowired
