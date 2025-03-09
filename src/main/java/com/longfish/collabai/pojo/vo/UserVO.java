@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static com.longfish.collabai.constant.CommonConstant.DATE_PATTERN;
-import static com.longfish.collabai.constant.CommonConstant.PATTERN;
+import static com.longfish.collabai.constant.CommonConstant.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,7 +30,7 @@ public class UserVO {
     @Schema(example = "hello")
     private String nickname;
 
-    @Schema(example = "https://static.longfish.site/auatar.users/aa.jpg")
+    @Schema(example = DEFAULT_AVATAR)
     private String avatar;
 
     @Schema(example = "info")

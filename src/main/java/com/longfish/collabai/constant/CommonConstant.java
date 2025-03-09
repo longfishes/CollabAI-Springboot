@@ -30,10 +30,12 @@ public interface CommonConstant {
 
     String TOKEN_NAME = "Authorization";
 
-    String ID_NAME = "uid";
-
     String HEADER_ADVICE = "登录后返回jwt令牌，之后所有请求请携带此参数";
 
     String HEADER_VAR = "{{token}}";
+
+    String DEFAULT_AVATAR = "https://blog.frium.top/upload/mswlm.jpeg";
+
+    String DEFAULT_COVER = "https://blog.frium.top/upload/%E7%BD%91%E6%98%93%E4%BA%91%E8%83%8C%E6%99%AF.jpg";
 
 }

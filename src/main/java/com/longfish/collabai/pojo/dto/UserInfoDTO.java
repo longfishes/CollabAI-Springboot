@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 import static com.longfish.collabai.constant.CommonConstant.DATE_PATTERN;
+import static com.longfish.collabai.constant.CommonConstant.DEFAULT_AVATAR;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class UserInfoDTO {
     @Schema(example = "hello")
     private String nickname;
 
-    @Schema(example = "https://static.longfish.site/tt")
+    @Schema(example = DEFAULT_AVATAR)
     private String avatar;
 
     @Schema(example = "info")

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com.longfish.collabai.constant.CommonConstant.DEFAULT_COVER;
 import static com.longfish.collabai.constant.CommonConstant.MEETING_PATTERN;
 
 @NoArgsConstructor
@@ -42,6 +43,6 @@ public class MeetingEditDTO {
     private String mdContent;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "https://example.com/file", description = "封面图片url")
+            example = DEFAULT_COVER, description = "封面图片url")
     private String coverImg;
 }

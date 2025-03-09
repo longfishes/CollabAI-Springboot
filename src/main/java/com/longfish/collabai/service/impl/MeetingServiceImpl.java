@@ -126,7 +126,6 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         }
 
         long diff = endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
-        log.info("编辑会议 diff: {}", diff);
         if (diff > MeetingConstant.MAX_LAST_TIME) {
             throw new BizException(StatusCodeEnum.MEETING_TOO_LONG);
         }

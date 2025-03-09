@@ -10,8 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
-import static com.longfish.collabai.constant.CommonConstant.MEETING_PATTERN;
-import static com.longfish.collabai.constant.CommonConstant.PATTERN;
+import static com.longfish.collabai.constant.CommonConstant.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,7 +43,7 @@ public class MeetingAbsVO {
     private LocalDateTime endTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "https://example.com/file", description = "封面图片url")
+            example = DEFAULT_COVER, description = "封面图片url")
     private String coverImg;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,

@@ -10,8 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
-import static com.longfish.collabai.constant.CommonConstant.MEETING_PATTERN;
-import static com.longfish.collabai.constant.CommonConstant.PATTERN;
+import static com.longfish.collabai.constant.CommonConstant.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +29,7 @@ public class MeetingShareVO {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "登录用户", description = "主持人")
     private String holderName;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "https://example.com/img", description = "主持人头像")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = DEFAULT_AVATAR, description = "主持人头像")
     private String holderAvatar;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "false", description = "是否已经加入")
@@ -47,7 +46,7 @@ public class MeetingShareVO {
     private LocalDateTime endTime;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "https://example.com/file", description = "封面图片url")
+            example = DEFAULT_COVER, description = "封面图片url")
     private String coverImg;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
