@@ -41,6 +41,8 @@ public enum StatusCodeEnum {
 
     END_TIME_ERROR(40013, "结束时间必须在开始时间之后", 200),
 
+    MEETING_TOO_LONG(40014, "会议持续时间过长", 200),
+
     AUTHORIZED(40100, "未认证", 401),
 
     PASSWORD_ERROR(40101, "密码错误", 200),

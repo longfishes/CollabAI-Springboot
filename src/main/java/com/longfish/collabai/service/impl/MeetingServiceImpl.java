@@ -20,6 +20,7 @@ import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.service.IMeetingUserService;
 import com.longfish.collabai.service.IUserService;
 import com.longfish.collabai.util.MD5Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ import static com.longfish.collabai.constant.MeetingConstant.OPERATOR;
  * @since 2025-03-03
  */
 @Service
+@Slf4j
 public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> implements IMeetingService {
 
     @Autowired
@@ -71,7 +73,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
         long diff = endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
         if (diff > MeetingConstant.MAX_LAST_TIME) {
-            throw new BizException("会议持续时间过长");
+            throw new BizException(StatusCodeEnum.MEETING_TOO_LONG);
         }
 
         Meeting meeting = BeanUtil.copyProperties(meetingDTO, Meeting.class);
@@ -124,8 +126,9 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         }
 
         long diff = endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
+        log.info("编辑会议 diff: {}", diff);
         if (diff > MeetingConstant.MAX_LAST_TIME) {
-            throw new BizException("会议持续时间过长");
+            throw new BizException(StatusCodeEnum.MEETING_TOO_LONG);
         }
 
         updateById(meeting);
