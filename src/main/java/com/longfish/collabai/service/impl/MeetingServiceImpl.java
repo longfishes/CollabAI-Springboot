@@ -69,6 +69,11 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             throw new BizException(StatusCodeEnum.END_TIME_ERROR);
         }
 
+        long diff = endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
+        if (diff > MeetingConstant.MAX_LAST_TIME) {
+            throw new BizException("会议持续时间过长");
+        }
+
         Meeting meeting = BeanUtil.copyProperties(meetingDTO, Meeting.class);
         meeting.setHolderId(currentId)
                 .setCreateTime(now);
