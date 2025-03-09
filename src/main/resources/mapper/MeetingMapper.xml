@@ -15,4 +15,9 @@
         <result column="create_time" property="createTime" />
     </resultMap>
 
+    <update id="setDefaultCover" parameterType="java.lang.String">
+        ALTER TABLE meeting
+        ALTER COLUMN cover_img SET DEFAULT #{url};
+    </update>
+
 </mapper>

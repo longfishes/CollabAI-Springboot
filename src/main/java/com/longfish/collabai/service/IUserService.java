@@ -40,4 +40,6 @@ public interface IUserService extends IService<User> {
     void bindPhone(PhoneBindDTO phoneBindDTO);
 
     void bindEmail(EmailBindDTO emailBindDTO);
+
+    void setDefaultAvatar(String url);
 }

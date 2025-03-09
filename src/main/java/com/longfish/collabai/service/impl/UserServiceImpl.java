@@ -55,6 +55,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
     public Boolean usernameUniqueCheck(String username) {
         if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(username).matches()) {
@@ -423,6 +426,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 .build();
 
         updateById(update);
+    }
+
+    @Override
+    public void setDefaultAvatar(String url) {
+        userMapper.setDefaultAvatar(url);
     }
 
     @Override

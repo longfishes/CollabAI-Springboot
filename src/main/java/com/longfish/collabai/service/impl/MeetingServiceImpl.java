@@ -53,6 +53,9 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
     private MeetingUserMapper meetingUserMapper;
 
     @Autowired
+    private MeetingMapper meetingMapper;
+
+    @Autowired
     private IUserService userService;
 
     @Override
@@ -357,5 +360,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
                 .one();
         if (meetingUser == null) throw new BizException(StatusCodeEnum.FORBIDDEN);
         return AuthVO.builder().authType(meetingUser.getAuthType()).build();
+    }
+
+    @Override
+    public void setDefaultCover(String url) {
+        meetingMapper.setDefaultCover(url);
     }
 }

@@ -1,7 +1,7 @@
 package com.longfish.collabai.mapper;
 
-import com.longfish.collabai.pojo.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.longfish.collabai.pojo.entity.User;
 
 /**
  * <p>
@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface UserMapper extends BaseMapper<User> {
 
+    void setDefaultAvatar(String url);
 }

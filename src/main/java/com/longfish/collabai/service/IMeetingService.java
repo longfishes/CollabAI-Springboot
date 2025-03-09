@@ -44,4 +44,6 @@ public interface IMeetingService extends IService<Meeting> {
     MeetingShareVO shareDetail(String meetingId);
 
     AuthVO auth(String meetingId);
+
+    void setDefaultCover(String url);
 }
