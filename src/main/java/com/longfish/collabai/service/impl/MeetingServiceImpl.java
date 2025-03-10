@@ -241,6 +241,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             throw new BizException("已经加入了会议");
         }
 
+        if (LocalDateTime.now().isAfter(meeting.getEndTime())) {
+            throw new BizException("会议已经结束了");
+        }
+
         meetingUserService.save(
             MeetingUser.builder()
                     .meetingId(id)
