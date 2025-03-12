@@ -329,7 +329,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
         LocalDateTime endTime = meeting.getEndTime();
         LocalDateTime now = LocalDateTime.now();
 
-        if (endTime.isAfter(now)) {
+        if (endTime.isBefore(now)) {
             throw new BizException("会议已经结束");
         }
 

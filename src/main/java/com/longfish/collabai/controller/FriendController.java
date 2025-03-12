@@ -1,6 +1,5 @@
 package com.longfish.collabai.controller;
 
-import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.Result;
 import com.longfish.collabai.pojo.vo.UserFriendVO;
 import com.longfish.collabai.service.IUserFriendService;
@@ -56,8 +55,8 @@ public class FriendController {
     @Operation(summary = "删除好友")
     @DeleteMapping("/{userId}")
     public Result<?> delFriend(@PathVariable Long userId) {
-        log.info("删除好友：{}", userId);
-        throw new BizException("还没开发");
+        userFriendService.delFriend(userId);
+        return Result.success();
     }
 
 }

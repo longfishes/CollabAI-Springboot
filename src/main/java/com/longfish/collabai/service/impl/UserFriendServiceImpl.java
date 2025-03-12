@@ -79,4 +79,9 @@ public class UserFriendServiceImpl extends ServiceImpl<UserFriendMapper, UserFri
         // 好友反向记录也添加
         throw new BizException("还没开发");
     }
+
+    @Override
+    public void delFriend(Long userId) {
+        throw new BizException("还没开发");
+    }
 }

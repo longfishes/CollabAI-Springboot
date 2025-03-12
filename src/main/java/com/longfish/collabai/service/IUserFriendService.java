@@ -25,4 +25,6 @@ public interface IUserFriendService extends IService<UserFriend> {
     void invite(Long userId);
 
     void accept(Long userId);
+
+    void delFriend(Long userId);
 }
