@@ -33,16 +33,17 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             @NotNull HttpServletRequest req,
             @NotNull HttpServletResponse resp,
             @NotNull Object handler) {
-        if (!(handler instanceof HandlerMethod)) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-        if (((HandlerMethod) handler).getBean().getClass().getName().contains("org.springdoc")) {
+        if (handlerMethod.getBean().getClass().getName().contains("org.springdoc")) {
             return true;
         }
-        if (((HandlerMethod) handler).getMethodAnnotation(NoLogin.class) != null) {
+        if (handlerMethod.getMethodAnnotation(NoLogin.class) != null ||
+            handlerMethod.getBeanType().getAnnotation(NoLogin.class) != null) {
             return true;
         }
-        if (((HandlerMethod) handler).getBean().getClass().getName().contains("BasicErrorController")) {
+        if (handlerMethod.getBean().getClass().getName().contains("BasicErrorController")) {
             if (resp.getStatus() == 404) throw new BizException(StatusCodeEnum.NOT_FOUND);
             throw new BizException(StatusCodeEnum.FAIL);
         }

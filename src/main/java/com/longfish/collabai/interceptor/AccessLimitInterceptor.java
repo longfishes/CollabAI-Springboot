@@ -32,25 +32,25 @@ public class AccessLimitInterceptor implements HandlerInterceptor {
             @NotNull HttpServletRequest req,
             @NotNull HttpServletResponse resp,
             @NotNull Object handler) throws Exception {
-        if (handler instanceof HandlerMethod handlerMethod) {
-            AccessLimit accessLimit = handlerMethod.getMethodAnnotation(AccessLimit.class);
-            if (accessLimit != null) {
-                long seconds = accessLimit.seconds();
-                int maxCount = accessLimit.maxCount();
-                String key = IpUtil.getIpAddress(req) + "-" + handlerMethod.getMethod().getName();
-                try {
-                    long q = redisService.incrExpire(key, seconds);
-                    if (q > maxCount) {
-                        render(resp, Result.error("请求过于频繁，" + seconds + "秒后再试"));
-                        log.warn(key + "请求次数超过每" + seconds + "秒" + maxCount + "次");
-                        return false;
-                    }
-                    return true;
-                } catch (RedisConnectionFailureException e) {
-                    log.warn("redis错误: " + e.getMessage());
-                    return false;
-                }
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return true;
+        }
+        AccessLimit accessLimit = handlerMethod.getMethodAnnotation(AccessLimit.class);
+        if (accessLimit == null) return true;
+
+        long seconds = accessLimit.seconds();
+        int maxCount = accessLimit.maxCount();
+        String key = IpUtil.getIpAddress(req) + "-" + handlerMethod.getMethod().getName();
+        try {
+            long q = redisService.incrExpire(key, seconds);
+            if (q > maxCount) {
+                render(resp, Result.error("请求过于频繁，" + seconds + "秒后再试"));
+                log.warn(key + "请求次数超过每" + seconds + "秒" + maxCount + "次");
+                return false;
             }
+        } catch (RedisConnectionFailureException e) {
+            log.warn("redis错误: " + e.getMessage());
+            return false;
         }
         return true;
     }
