@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.longfish.collabai.constant.RabbitMQConstant;
-import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.RecognizeDTO;
 import com.longfish.collabai.service.RedisService;
@@ -109,6 +108,7 @@ public class RTASRApp {
 
         @Override
         public void onError(Exception e) {
+            e.printStackTrace();
             log.error("RTASRApp : 连接发生错误 : " + e.getMessage());
         }
 
@@ -179,7 +179,8 @@ public class RTASRApp {
         }
 
         String result = resultBuilder.toString();
-        String currentName = BaseContext.getCurrentName();
+//        String currentName = BaseContext.getCurrentName();
+        String currentName = "test";
         String meetingId = (String) redisService.get(REDIS_KEY_MEETING_ID);
 
         RecognizeDTO recognizeDTO = RecognizeDTO.builder()
