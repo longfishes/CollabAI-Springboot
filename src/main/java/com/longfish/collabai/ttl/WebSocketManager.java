@@ -31,6 +31,14 @@ public class WebSocketManager {
         this.rtasrApp = rtasrApp;
     }
 
+    public void setMeetingId(String meetingId) {
+        rtasrApp.setMeetingId(meetingId);
+    }
+
+    public void setCurrentName(String currentName) {
+        rtasrApp.setCurrentName(currentName);
+    }
+
     @Scheduled(fixedRate = 1000)
     public void checkConnection() {
         if (isConnected && System.currentTimeMillis() - lastSendTime > TIMEOUT_SECONDS * 1000) {

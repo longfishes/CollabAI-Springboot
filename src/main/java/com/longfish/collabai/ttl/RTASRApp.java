@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.longfish.collabai.constant.RabbitMQConstant;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.RecognizeDTO;
-import com.longfish.collabai.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -28,8 +27,6 @@ import java.security.cert.X509Certificate;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import static com.longfish.collabai.constant.DatabaseConstant.REDIS_KEY_MEETING_ID;
-
 /**
  * 实时转写调用
  *
@@ -42,8 +39,17 @@ public class RTASRApp {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private RedisService redisService;
+    private String currentName;
+
+    private String meetingId;
+
+    public void setCurrentName(String currentName) {
+        this.currentName = currentName;
+    }
+
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
 
     // 生成握手参数
     public String getHandShakeParams(String appId, String secretKey) {
@@ -179,9 +185,6 @@ public class RTASRApp {
         }
 
         String result = resultBuilder.toString();
-//        String currentName = BaseContext.getCurrentName();
-        String currentName = "test";
-        String meetingId = (String) redisService.get(REDIS_KEY_MEETING_ID);
 
         RecognizeDTO recognizeDTO = RecognizeDTO.builder()
                 .content(currentName + ": " + result)

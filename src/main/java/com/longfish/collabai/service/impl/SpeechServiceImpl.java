@@ -1,5 +1,6 @@
 package com.longfish.collabai.service.impl;
 
+import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.service.RedisService;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import static com.longfish.collabai.constant.DatabaseConstant.REDIS_KEY_MEETING_ID;
 
 @Service
 @Slf4j
@@ -55,7 +54,8 @@ public class SpeechServiceImpl implements SpeechService {
             throw new BizException("处理音频数据失败：" + e.getMessage());
         }
 
-        redisService.set(REDIS_KEY_MEETING_ID, meetingId);
+        webSocketManager.setMeetingId(meetingId);
+        webSocketManager.setCurrentName(BaseContext.getCurrentName());
     }
 
     @Override
