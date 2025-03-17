@@ -43,4 +43,18 @@ public class AIMessageServiceImpl implements AIMessageService {
                 new Message(meetingId.getBytes(), new MessageProperties())
         );
     }
+
+    @Override
+    public String syncAiMessage(String meetingId) {
+        if (meetingId == null) {
+            throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+        }
+        Meeting meeting = meetingService.getById(meetingId);
+
+        if (meeting == null) {
+            throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+        }
+
+        return meeting.getAiSummary();
+    }
 }
