@@ -3,7 +3,6 @@ package com.longfish.collabai.service.impl;
 import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.service.IMeetingService;
-import com.longfish.collabai.service.RedisService;
 import com.longfish.collabai.service.SpeechService;
 import com.longfish.collabai.ttl.WebSocketManager;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,6 @@ public class SpeechServiceImpl implements SpeechService {
 
     @Autowired
     private IMeetingService meetingService;
-
-    @Autowired
-    private RedisService redisService;
 
     @Override
     public void recognizeSpeech(byte[] audioData, String meetingId) {
