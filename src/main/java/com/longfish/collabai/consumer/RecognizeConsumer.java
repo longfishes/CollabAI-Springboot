@@ -28,7 +28,8 @@ public class RecognizeConsumer {
         if (meeting == null) {
             throw new BizException("会议号不存在");
         }
-        meeting.setSpeechText(meeting.getSpeechText() + "\n" + recognizeDTO.getContent());
+        if (meeting.getSpeechText() == null) meeting.setSpeechText(recognizeDTO.getContent());
+        else meeting.setSpeechText(meeting.getSpeechText() + "\n" + recognizeDTO.getContent());
         meetingService.updateById(meeting);
     }
 
