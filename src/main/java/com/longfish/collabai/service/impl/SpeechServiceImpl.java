@@ -55,7 +55,7 @@ public class SpeechServiceImpl implements SpeechService {
     }
 
     @Override
-    public String syncSpeechText(String meetingId) {
-        return meetingService.getById(meetingId).getSpeechText();
+    public String[] syncSpeechText(String meetingId) {
+        return meetingService.getById(meetingId).getSpeechText().split("\n");
     }
 }

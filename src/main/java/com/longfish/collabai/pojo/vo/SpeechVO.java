@@ -9,5 +9,5 @@ import lombok.Data;
 public class SpeechVO {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "语音识别结果")
-    private String speechText;
+    private String[] speechText;
 }
