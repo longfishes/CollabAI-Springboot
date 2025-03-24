@@ -74,7 +74,7 @@ public class WebSocketServer {
         log.error("websocket异常：{}", e.getMessage());
     }
 
-    @OnMessage
+    @OnMessage(maxMessageSize = 104857600)
     public void onMessage(
             byte[] data,
             @PathParam("meetingId") String meetingId,
