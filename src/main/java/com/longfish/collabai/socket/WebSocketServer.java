@@ -1,12 +1,16 @@
 package com.longfish.collabai.socket;
 
 import com.alibaba.fastjson.JSON;
+import com.longfish.collabai.enums.StatusCodeEnum;
+import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.WsDTO;
 import com.longfish.collabai.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import jakarta.annotation.PostConstruct;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,6 +33,13 @@ public class WebSocketServer {
 
     private static final Map<String, WsDTO> sessionMap = new HashMap<>();
 
+    private static String tokenKey;
+
+    @PostConstruct
+    public void init() {
+        tokenKey = secretKey;
+    }
+
     @OnOpen
     public void onOpen(
             Session session,
@@ -36,9 +47,15 @@ public class WebSocketServer {
             @PathParam("sessionId") String sessionId) {
 
         String token = session.getRequestParameterMap().get("token").get(0);
-        Claims claims = JwtUtil.parseJWT(secretKey, token);
-        Long userId = Long.valueOf(claims.get(USER_ID).toString());
-        String nickname = claims.get(USER_NAME).toString();
+        Long userId = null;
+        String nickname = null;
+        try {
+            Claims claims = JwtUtil.parseJWT(tokenKey, token);
+            userId = Long.valueOf(claims.get(USER_ID).toString());
+            nickname = claims.get(USER_NAME).toString();
+        } catch (Exception e) {
+            throw new BizException(StatusCodeEnum.NO_LOGIN);
+        }
 
         log.info("会话 {} 会议号 {} 建立连接", sessionId, meetingId);
         WsDTO dto = WsDTO.builder()
@@ -50,8 +67,10 @@ public class WebSocketServer {
         sessionMap.put(sessionId, dto);
     }
 
+    @SneakyThrows
     @OnError
-    public void onError(Throwable e) {
+    public void onError(Session session, Throwable e) {
+        session.getBasicRemote().sendText(StatusCodeEnum.NO_LOGIN.getDesc());
         log.error("websocket异常：{}", e.getMessage());
     }
 
