@@ -70,7 +70,9 @@ public class WebSocketServer {
     @SneakyThrows
     @OnError
     public void onError(Session session, Throwable e) {
-        session.getBasicRemote().sendText(StatusCodeEnum.NO_LOGIN.getDesc());
+        if (e instanceof BizException bizException) {
+            session.getBasicRemote().sendText(bizException.getMessage());
+        }
         log.error("websocket异常：{}", e.getMessage());
     }
 
