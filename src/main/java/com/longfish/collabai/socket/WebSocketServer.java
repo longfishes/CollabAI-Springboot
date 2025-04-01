@@ -47,11 +47,11 @@ public class WebSocketServer {
             @PathParam("sessionId") String sessionId) {
 
         String token = session.getRequestParameterMap().get("token").get(0);
-        Long userId = null;
-        String nickname = null;
+        long userId;
+        String nickname;
         try {
             Claims claims = JwtUtil.parseJWT(tokenKey, token);
-            userId = Long.valueOf(claims.get(USER_ID).toString());
+            userId = Long.parseLong(claims.get(USER_ID).toString());
             nickname = claims.get(USER_NAME).toString();
         } catch (Exception e) {
             throw new BizException(StatusCodeEnum.NO_LOGIN);
@@ -102,7 +102,10 @@ public class WebSocketServer {
                 map.put("nickName", wsDTO.getNickName());
 
                 wsDTO.getSession().getBasicRemote().sendText(JSON.toJSONString(map));
-            } catch (IOException ignore) {}
+
+//                wsDTO.getSession().getBasicRemote().sendBinary(ByteBuffer.wrap(data));
+
+            } catch (Exception ignore) {}
         });
     }
 

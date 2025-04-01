@@ -35,4 +35,10 @@ public class AIMessageController {
         );
     }
 
+    @Operation(summary = "获取安恒ai插件token")
+    @GetMapping("/getToken")
+    public Result<String> getAIToken() {
+        return Result.success(aiMessageService.getAIToken());
+    }
+
 }
