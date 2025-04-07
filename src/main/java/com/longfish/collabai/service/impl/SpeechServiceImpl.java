@@ -1,7 +1,9 @@
 package com.longfish.collabai.service.impl;
 
 import com.longfish.collabai.context.BaseContext;
+import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
+import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.service.SpeechService;
 import com.longfish.collabai.ttl.WebSocketManager;
@@ -56,6 +58,11 @@ public class SpeechServiceImpl implements SpeechService {
 
     @Override
     public String[] syncSpeechText(String meetingId) {
-        return meetingService.getById(meetingId).getSpeechText().split("\n");
+        Meeting meeting = meetingService.getById(meetingId);
+        if (meeting == null) {
+            throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+        }
+        if (meeting.getSpeechText() == null) meeting.setSpeechText("");
+        return meeting.getSpeechText().split("\n");
     }
 }
