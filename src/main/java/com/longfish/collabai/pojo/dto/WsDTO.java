@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,9 +19,10 @@ public class WsDTO {
 
     private Session session;
 
-    private String meetingId;
-
     private Long userId;
 
     private String nickName;
+
+    private List<Map<String, String>> chatHistory;
+
 }

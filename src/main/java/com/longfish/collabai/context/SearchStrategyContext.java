@@ -21,7 +21,7 @@ public class SearchStrategyContext {
     private Map<String, SearchStrategy> searchStrategyMap;
 
     public List<DocumentSearchVO> executeSearchStrategy(String keywords) {
-        return searchStrategyMap.get(getStrategy(searchMode)).searchDocument(keywords);
+        return searchStrategyMap.get(getStrategy(searchMode)).search(keywords);
     }
 
 }

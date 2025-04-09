@@ -27,19 +27,6 @@ public class HengRequestUtil {
 
     @SneakyThrows
     public String chat(String message) {
-        return callHengApi(message);
-    }
-
-    @SneakyThrows
-    public String summarySth(String message) {
-        return callHengApi("帮我条理清晰地总结以下内容：\n" + message);
-    }
-
-    @SneakyThrows
-    private String callHengApi(String message) {
-        MediaType mediaType = MediaType.parse("application/json");
-
-        // 创建消息内容
         Map<String, String> messageContent = new HashMap<>();
         messageContent.put("role", "user");
         messageContent.put("content", message);
@@ -47,8 +34,27 @@ public class HengRequestUtil {
         List<Map<String, String>> messageList = new ArrayList<>();
         messageList.add(messageContent);
 
+        return callHengApi(messageList);
+    }
+
+    @SneakyThrows
+    public String summarySth(String message) {
+        Map<String, String> messageContent = new HashMap<>();
+        messageContent.put("role", "user");
+        messageContent.put("content", "帮我条理清晰地总结以下内容：\n" + message);
+
+        List<Map<String, String>> messageList = new ArrayList<>();
+        messageList.add(messageContent);
+
+        return callHengApi(messageList);
+    }
+
+    @SneakyThrows
+    public String callHengApi(List<Map<String, String>> history) {
+        MediaType mediaType = MediaType.parse("application/json");
+
         Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("message", messageList);
+        requestBodyMap.put("message", history);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(requestBodyMap);

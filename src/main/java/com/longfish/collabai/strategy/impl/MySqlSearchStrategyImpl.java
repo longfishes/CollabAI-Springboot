@@ -15,7 +15,7 @@ public class MySqlSearchStrategyImpl implements SearchStrategy {
     private SearchDisplayLengthProperties lengthProperties;
 
     @Override
-    public List<DocumentSearchVO> searchDocument(String keywords) {
+    public List<DocumentSearchVO> search(String keywords) {
         return null;
     }
 

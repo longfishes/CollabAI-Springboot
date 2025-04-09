@@ -5,6 +5,9 @@ import com.longfish.collabai.util.HengRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service("hengAIStrategyImpl")
 public class HengAIStrategyImpl implements AIStrategy {
 
@@ -19,6 +22,11 @@ public class HengAIStrategyImpl implements AIStrategy {
     @Override
     public String chat(String content) {
         return hengRequestUtil.chat(content);
+    }
+
+    @Override
+    public String chatWithHistory(List<Map<String, String>> history) {
+        return hengRequestUtil.callHengApi(history);
     }
 
 }

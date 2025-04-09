@@ -1,6 +1,6 @@
 package com.longfish.collabai.socket;
 
-import com.alibaba.fastjson.JSON;
+import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.WsDTO;
@@ -12,19 +12,21 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.longfish.collabai.constant.CommonConstant.USER_ID;
 import static com.longfish.collabai.constant.CommonConstant.USER_NAME;
 
 @Component
-@ServerEndpoint(value = "/ws/{meetingId}/{sessionId}")
+@ServerEndpoint(value = "/ws/{sessionId}")
 @Slf4j
 public class WebSocketServer {
 
@@ -35,17 +37,20 @@ public class WebSocketServer {
 
     private static String tokenKey;
 
+    private static AIStrategyContext aiStrategyContext;
+
     @PostConstruct
     public void init() {
         tokenKey = secretKey;
     }
 
-    @OnOpen
-    public void onOpen(
-            Session session,
-            @PathParam("meetingId") String meetingId,
-            @PathParam("sessionId") String sessionId) {
+    @Autowired
+    public void setAiStrategyContext(AIStrategyContext aiStrategyContext) {
+        WebSocketServer.aiStrategyContext = aiStrategyContext;
+    }
 
+    @OnOpen
+    public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
         String token = session.getRequestParameterMap().get("token").get(0);
         long userId;
         String nickname;
@@ -57,12 +62,12 @@ public class WebSocketServer {
             throw new BizException(StatusCodeEnum.NO_LOGIN);
         }
 
-        log.info("会话 {} 会议号 {} 建立连接", sessionId, meetingId);
+        log.info("会话 {} 建立连接", sessionId);
         WsDTO dto = WsDTO.builder()
                 .session(session)
-                .meetingId(meetingId)
                 .nickName(nickname)
                 .userId(userId)
+                .chatHistory(new ArrayList<>())
                 .build();
         sessionMap.put(sessionId, dto);
     }
@@ -77,11 +82,24 @@ public class WebSocketServer {
     }
 
     @OnMessage(maxMessageSize = 104857600)
-    public void onMessage(
-            byte[] data,
-            @PathParam("meetingId") String meetingId,
-            @PathParam("sessionId") String sessionId) {
-        sendMessage(sessionId, meetingId, data);
+    public void onMessage(String message, @PathParam("sessionId") String sessionId) {
+        log.info(sessionId, ":", message);
+
+        Map<String, String> messageMap = new HashMap<>();
+        messageMap.put("role", "user");
+        messageMap.put("content", message);
+
+        List<Map<String, String>> chatHistory = sessionMap.get(sessionId).getChatHistory();
+        chatHistory.add(messageMap);
+
+        String resp = aiStrategyContext.execChatWithHistory(chatHistory);
+        sendMessage(sessionId, resp);
+
+        Map<String, String> respMap = new HashMap<>();
+        respMap.put("role", "assistant");
+        respMap.put("content", resp);
+
+        chatHistory.add(respMap);
     }
 
     @OnClose
@@ -89,24 +107,10 @@ public class WebSocketServer {
         sessionMap.remove(sessionId);
     }
 
-    public void sendMessage(String fromSessionId, String meetingId, byte[] data) {
-        sessionMap.forEach((s, wsDTO) -> {
-            try {
-                if (s.equals(fromSessionId)) return;
-                if (!wsDTO.getMeetingId().equals(meetingId)) return;
-
-                Map<String, String> map = new HashMap<>();
-                String encodeData = new String(Base64.getEncoder().encode(data));
-                map.put("data", encodeData);
-                map.put("userId", wsDTO.getUserId().toString());
-                map.put("nickName", wsDTO.getNickName());
-
-                wsDTO.getSession().getBasicRemote().sendText(JSON.toJSONString(map));
-
-//                wsDTO.getSession().getBasicRemote().sendBinary(ByteBuffer.wrap(data));
-
-            } catch (Exception ignore) {}
-        });
+    public void sendMessage(String sessionId, String message) {
+        try {
+            sessionMap.get(sessionId).getSession().getBasicRemote().sendText(message);
+        } catch (IOException ignore) {}
     }
 
     public void broadcasts(String message) {

@@ -5,6 +5,9 @@ import com.longfish.collabai.util.DsRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service("dsAIStrategyImpl")
 public class DsAIStrategyImpl implements AIStrategy {
 
@@ -19,6 +22,11 @@ public class DsAIStrategyImpl implements AIStrategy {
     @Override
     public String chat(String content) {
         return dsRequestUtil.chat(content);
+    }
+
+    @Override
+    public String chatWithHistory(List<Map<String, String>> history) {
+        return dsRequestUtil.callDeepSeekApi(history);
     }
 
 }

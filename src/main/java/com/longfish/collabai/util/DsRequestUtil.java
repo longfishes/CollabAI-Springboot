@@ -24,19 +24,6 @@ public class DsRequestUtil {
 
     @SneakyThrows
     public String chat(String message) {
-        return callDeepSeekApi(message);
-    }
-
-    @SneakyThrows
-    public String summarizeSth(String message) {
-        return callDeepSeekApi("帮我条理清晰地总结以下内容：\n" + message);
-    }
-
-    @SneakyThrows
-    private String callDeepSeekApi(String message) {
-        MediaType mediaType = MediaType.parse("application/json");
-
-        // 创建消息内容
         Map<String, String> messageContent = new HashMap<>();
         messageContent.put("role", "user");
         messageContent.put("content", message);
@@ -44,8 +31,27 @@ public class DsRequestUtil {
         List<Map<String, String>> messageList = new ArrayList<>();
         messageList.add(messageContent);
 
+        return callDeepSeekApi(messageList);
+    }
+
+    @SneakyThrows
+    public String summarizeSth(String message) {
+        Map<String, String> messageContent = new HashMap<>();
+        messageContent.put("role", "user");
+        messageContent.put("content", "帮我条理清晰地总结以下内容：\n" + message);
+
+        List<Map<String, String>> messageList = new ArrayList<>();
+        messageList.add(messageContent);
+
+        return callDeepSeekApi(messageList);
+    }
+
+    @SneakyThrows
+    public String callDeepSeekApi(List<Map<String, String>> history) {
+        MediaType mediaType = MediaType.parse("application/json");
+
         Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("messages", messageList);
+        requestBodyMap.put("messages", history);
         requestBodyMap.put("model", "deepseek-chat");
         requestBodyMap.put("temperature", 0.7);
         requestBodyMap.put("max_tokens", 2000);

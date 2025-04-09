@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface SearchStrategy {
 
-    List<DocumentSearchVO> searchDocument(String keywords);
+    List<DocumentSearchVO> search(String keywords);
 
 }

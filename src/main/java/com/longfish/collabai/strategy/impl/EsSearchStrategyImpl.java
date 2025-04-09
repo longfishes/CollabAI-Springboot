@@ -10,7 +10,7 @@ import java.util.List;
 public class EsSearchStrategyImpl implements SearchStrategy {
 
     @Override
-    public List<DocumentSearchVO> searchDocument(String keywords) {
+    public List<DocumentSearchVO> search(String keywords) {
         return null;
     }
 }
