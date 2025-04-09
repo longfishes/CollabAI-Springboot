@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "ai")
-public class AIProperties {
+@ConfigurationProperties(prefix = "ai.heng")
+public class HengProperties {
 
     private String appKey;
 

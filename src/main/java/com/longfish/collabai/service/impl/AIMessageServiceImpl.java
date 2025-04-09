@@ -1,11 +1,14 @@
 package com.longfish.collabai.service.impl;
 
 import com.longfish.collabai.constant.RabbitMQConstant;
+import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.context.BaseContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
+import com.longfish.collabai.pojo.dto.ChatDTO;
 import com.longfish.collabai.pojo.entity.Meeting;
-import com.longfish.collabai.properties.AIProperties;
+import com.longfish.collabai.pojo.vo.ChatVO;
+import com.longfish.collabai.properties.HengProperties;
 import com.longfish.collabai.service.AIMessageService;
 import com.longfish.collabai.service.IMeetingService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +41,13 @@ public class AIMessageServiceImpl implements AIMessageService {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private AIProperties aiProperties;
+    private HengProperties hengProperties;
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private AIStrategyContext aiStrategyContext;
 
     @Override
     public void summarizeMeeting(String meetingId) {
@@ -82,18 +88,18 @@ public class AIMessageServiceImpl implements AIMessageService {
     @Override
     public String getAIToken() {
         try {
-            String sign = getSign(aiProperties.getAppKey(), aiProperties.getAppSecret());
+            String sign = getSign(hengProperties.getAppKey(), hengProperties.getAppSecret());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("appKey", aiProperties.getAppKey());
+            headers.set("appKey", hengProperties.getAppKey());
             headers.set("sign", sign);
 
             Map<String, String> body = new HashMap<>();
             HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    aiProperties.getBaseUrl() + "/open/api/xiaoheng/token",
+                    hengProperties.getBaseUrl() + "/open/api/xiaoheng/token",
                     HttpMethod.POST,
                     requestEntity,
                     new ParameterizedTypeReference<>() {}
@@ -110,6 +116,13 @@ public class AIMessageServiceImpl implements AIMessageService {
             log.error("获取AI token失败", e);
             throw new BizException("获取token失败: " + e.getMessage());
         }
+    }
+
+    @Override
+    public ChatVO chat(ChatDTO chatDTO) {
+        return ChatVO.builder()
+                .resp(aiStrategyContext.execSummarizeSth(chatDTO.getContent()))
+                .build();
     }
 
     public static String getSign(String key, String secret) {

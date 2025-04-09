@@ -1,9 +1,10 @@
 package com.longfish.collabai;
 
+import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.pojo.entity.Meeting;
-import com.longfish.collabai.properties.AIProperties;
+import com.longfish.collabai.properties.HengProperties;
 import com.longfish.collabai.service.IMeetingService;
-import com.longfish.collabai.util.RequestUtil;
+import com.longfish.collabai.util.HengRequestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,19 +12,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.longfish.collabai.util.RequestUtil.getSign;
+import static com.longfish.collabai.util.HengRequestUtil.getSign;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CollabAISpringbootApplicationTests {
 
     @Autowired
-    private RequestUtil requestUtil;
+    private HengRequestUtil hengRequestUtil;
 
     @Autowired
-    private AIProperties aiProperties;
+    private HengProperties hengProperties;
 
     @Autowired
     private IMeetingService meetingService;
+
+    @Autowired
+    private AIStrategyContext aiStrategyContext;
+
+    @Test
+    public void testAIStrategy() {
+        String summarizeRes = aiStrategyContext.execSummarizeSth("你好");
+        System.out.println(summarizeRes);
+    }
 
     @Test
     public void testQueryStartMeeting() {
@@ -35,10 +45,8 @@ class CollabAISpringbootApplicationTests {
                 .ge(Meeting::getEndTime, now)
                 .list();
 
-        ongoingMeetings.forEach(meeting -> {
-            System.out.println("正在进行的会议: " + meeting.getTitle() +
-                    ", 开始时间: " + meeting.getStartTime() + ", 结束时间: " + meeting.getEndTime());
-        });
+        ongoingMeetings.forEach(meeting -> System.out.println("正在进行的会议: " + meeting.getTitle() +
+                ", 开始时间: " + meeting.getStartTime() + ", 结束时间: " + meeting.getEndTime()));
     }
 
     @Test
@@ -86,13 +94,13 @@ class CollabAISpringbootApplicationTests {
                                 
                 主持人：感谢大家的参与和讨论。今天的会议到此结束。""";
         String content = "会议文档：" + md + "会议录音详细记录：" + rec;
-        String res = requestUtil.summarySth(content);
+        String res = hengRequestUtil.summarySth(content);
         System.out.println(res);
     }
 
     @Test
     public void testGetSign() {
-        String sign = getSign(aiProperties.getAppKey() , aiProperties.getAppSecret());
+        String sign = getSign(hengProperties.getAppKey() , hengProperties.getAppSecret());
         System.out.println(sign);
     }
 

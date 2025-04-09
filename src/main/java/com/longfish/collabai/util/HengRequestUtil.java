@@ -2,7 +2,7 @@ package com.longfish.collabai.util;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.longfish.collabai.properties.AIProperties;
+import com.longfish.collabai.properties.HengProperties;
 import lombok.SneakyThrows;
 import okhttp3.*;
 import org.apache.commons.codec.binary.Base64;
@@ -17,13 +17,13 @@ import java.util.*;
 import static com.longfish.collabai.constant.CommonConstant.APPLICATION_JSON;
 
 @Component
-public class RequestUtil {
+public class HengRequestUtil {
 
     @Autowired
     private OkHttpClient okHttpClient;
 
     @Autowired
-    private AIProperties aiProperties;
+    private HengProperties hengProperties;
 
     @SneakyThrows
     public String summarySth(String message) {
@@ -46,11 +46,11 @@ public class RequestUtil {
         @SuppressWarnings("deprecation")
         RequestBody body = RequestBody.create(mediaType, jsonBody);
         Request request = new Request.Builder()
-                .url(aiProperties.getBaseUrl() + "/open/api/v1/chat")
+                .url(hengProperties.getBaseUrl() + "/open/api/v1/chat")
                 .method("POST", body)
-                .addHeader("appKey", aiProperties.getAppKey())
-                .addHeader("sign", Objects.requireNonNull(getSign(aiProperties.getAppKey(),
-                        aiProperties.getAppSecret())))
+                .addHeader("appKey", hengProperties.getAppKey())
+                .addHeader("sign", Objects.requireNonNull(getSign(hengProperties.getAppKey(),
+                        hengProperties.getAppSecret())))
                 .addHeader("User-Agent", "collabai-backend")
                 .addHeader("Content-Type", APPLICATION_JSON)
                 .build();

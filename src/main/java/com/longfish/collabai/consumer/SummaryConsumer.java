@@ -1,10 +1,10 @@
 package com.longfish.collabai.consumer;
 
+import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.entity.Meeting;
 import com.longfish.collabai.service.IMeetingService;
-import com.longfish.collabai.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,7 +22,7 @@ public class SummaryConsumer {
     private IMeetingService meetingService;
 
     @Autowired
-    private RequestUtil requestUtil;
+    private AIStrategyContext aiStrategyContext;
 
     @RabbitHandler
     public void process(byte[] data) {
@@ -35,7 +35,7 @@ public class SummaryConsumer {
         String content =  "会议主题：" + meeting.getTitle() +
                 "\n会议文档：" + meeting.getMdContent() +
                 "\n会议录音详细记录：" + meeting.getSpeechText();
-        String summarizeRes = requestUtil.summarySth(content);
+        String summarizeRes = aiStrategyContext.execSummarizeSth(content);
 
         meeting.setAiSummary(summarizeRes);
         meetingService.updateById(meeting);
