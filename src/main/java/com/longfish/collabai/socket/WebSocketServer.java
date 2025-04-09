@@ -51,10 +51,10 @@ public class WebSocketServer {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
-        String token = session.getRequestParameterMap().get("token").get(0);
         long userId;
         String nickname;
         try {
+            String token = session.getRequestParameterMap().get("token").get(0);
             Claims claims = JwtUtil.parseJWT(tokenKey, token);
             userId = Long.parseLong(claims.get(USER_ID).toString());
             nickname = claims.get(USER_NAME).toString();
@@ -83,8 +83,6 @@ public class WebSocketServer {
 
     @OnMessage(maxMessageSize = 104857600)
     public void onMessage(String message, @PathParam("sessionId") String sessionId) {
-        log.info(sessionId, ":", message);
-
         Map<String, String> messageMap = new HashMap<>();
         messageMap.put("role", "user");
         messageMap.put("content", message);
