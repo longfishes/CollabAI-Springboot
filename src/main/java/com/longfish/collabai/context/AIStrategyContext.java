@@ -22,4 +22,8 @@ public class AIStrategyContext {
         return aiStrategyMap.get(getStrategy(aiMode)).summarySth(message);
     }
 
+    public String execChat(String content) {
+        return aiStrategyMap.get(getStrategy(aiMode)).chat(content);
+    }
+
 }

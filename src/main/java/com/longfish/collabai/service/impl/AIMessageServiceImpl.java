@@ -121,7 +121,7 @@ public class AIMessageServiceImpl implements AIMessageService {
     @Override
     public ChatVO chat(ChatDTO chatDTO) {
         return ChatVO.builder()
-                .resp(aiStrategyContext.execSummarizeSth(chatDTO.getContent()))
+                .resp(aiStrategyContext.execChat(chatDTO.getContent()))
                 .build();
     }
 
