@@ -26,13 +26,23 @@ public class HengRequestUtil {
     private HengProperties hengProperties;
 
     @SneakyThrows
+    public String chat(String message) {
+        return callHengApi(message);
+    }
+
+    @SneakyThrows
     public String summarySth(String message) {
+        return callHengApi("帮我条理清晰地总结以下内容：\n" + message);
+    }
+
+    @SneakyThrows
+    private String callHengApi(String message) {
         MediaType mediaType = MediaType.parse("application/json");
 
         // 创建消息内容
         Map<String, String> messageContent = new HashMap<>();
         messageContent.put("role", "user");
-        messageContent.put("content", "帮我条理清晰地总结以下内容：\n" + message);
+        messageContent.put("content", message);
 
         List<Map<String, String>> messageList = new ArrayList<>();
         messageList.add(messageContent);
@@ -54,9 +64,37 @@ public class HengRequestUtil {
                 .addHeader("User-Agent", "collabai-backend")
                 .addHeader("Content-Type", APPLICATION_JSON)
                 .build();
-        Response response = okHttpClient.newCall(request).execute();
-        return (String) (((Map) (((Map) (JSON.parseObject(Objects.requireNonNull(response.body()).string(), Map.class)
-                .get("data"))).get("message"))).get("content"));
+
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new RuntimeException("API调用失败: " + response.code() + " " + response.message());
+            }
+
+            ResponseBody responseBody = response.body();
+            if (responseBody == null) {
+                throw new RuntimeException("API返回为空");
+            }
+
+            String responseString = responseBody.string();
+            Map jsonResponse = JSON.parseObject(responseString, Map.class);
+
+            Map data = (Map) jsonResponse.get("data");
+            if (data == null) {
+                throw new RuntimeException("API返回数据为空");
+            }
+
+            Map messageData = (Map) data.get("message");
+            if (messageData == null) {
+                throw new RuntimeException("API返回消息为空");
+            }
+
+            String content = (String) messageData.get("content");
+            if (content == null || content.trim().isEmpty()) {
+                throw new RuntimeException("API返回内容为空");
+            }
+
+            return content;
+        }
     }
 
     public static String getSign(String key, String secret) {
@@ -73,5 +111,4 @@ public class HengRequestUtil {
         }
         return null;
     }
-
 }

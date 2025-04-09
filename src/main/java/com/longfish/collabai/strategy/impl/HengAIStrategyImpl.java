@@ -18,7 +18,7 @@ public class HengAIStrategyImpl implements AIStrategy {
 
     @Override
     public String chat(String content) {
-        return null;
+        return hengRequestUtil.chat(content);
     }
 
 }
