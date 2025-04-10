@@ -10,6 +10,7 @@ import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -17,6 +18,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.longfish.collabai.constant.CommonConstant.*;
 
@@ -35,13 +38,15 @@ public class WebSocketServer {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private static final Map<String, WsDTO> sessionMap = new HashMap<>();
+    private static final Map<String, WsDTO> sessionMap = new ConcurrentHashMap<>();
 
     private static String tokenKey;
 
     private static AIStrategyContext aiStrategyContext;
 
     private static IMeetingService meetingService;
+
+    private static final int MAX_CHAT_HISTORY = 100;
 
     @PostConstruct
     public void init() {
@@ -111,11 +116,21 @@ public class WebSocketServer {
 
     @SneakyThrows
     @OnError
-    public void onError(Session session, Throwable e) {
+    public void onError(Session session, Throwable e, @PathParam("sessionId") String sessionId) {
+        log.debug("websocket异常：{}", e.getMessage());
+
         if (e instanceof BizException bizException) {
             session.getBasicRemote().sendText(bizException.getMessage());
         }
-        log.error("websocket异常：{}", e.getMessage());
+
+        try {
+            if (sessionId != null) {
+                sessionMap.remove(sessionId);
+            }
+            if (session.isOpen()) {
+                session.close();
+            }
+        } catch (IOException ignore) {}
     }
 
     @OnMessage(maxMessageSize = 104857600)
@@ -126,16 +141,18 @@ public class WebSocketServer {
         messageMap.put("role", "user");
         messageMap.put("content", message);
 
-        List<Map<String, String>> chatHistory = sessionMap.get(sessionId).getChatHistory();
-        chatHistory.add(messageMap);
+        addChatHistory(sessionId, messageMap);
 
-        String resp = aiStrategyContext.execChatStream(sessionMap.get(sessionId).getSession(), chatHistory);
+        String resp = aiStrategyContext.execChatStream(
+                sessionMap.get(sessionId).getSession(),
+                sessionMap.get(sessionId).getChatHistory()
+        );
 
         Map<String, String> respMap = new HashMap<>();
         respMap.put("role", "assistant");
         respMap.put("content", resp);
 
-        chatHistory.add(respMap);
+        addChatHistory(sessionId, respMap);
     }
 
     @OnClose
@@ -149,6 +166,32 @@ public class WebSocketServer {
                 dto.getSession().getBasicRemote().sendText(message);
             } catch (IOException ignore) {}
         });
+    }
+
+    @Scheduled(fixedRate = 300000)
+    public void cleanupSessions() {
+        sessionMap.entrySet().removeIf(entry -> {
+            Session session = entry.getValue().getSession();
+            return !session.isOpen();
+        });
+    }
+
+    public void addChatHistory(String sessionId, Map<String, String> message) {
+        List<Map<String, String>> chatHistory = sessionMap.get(sessionId).getChatHistory();
+        if (chatHistory.size() >= MAX_CHAT_HISTORY) {
+            chatHistory.remove(0);
+        }
+        chatHistory.add(message);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        sessionMap.forEach((sessionId, wsDTO) -> {
+            try {
+                wsDTO.getSession().close();
+            } catch (IOException ignore) {}
+        });
+        sessionMap.clear();
     }
 
 }
