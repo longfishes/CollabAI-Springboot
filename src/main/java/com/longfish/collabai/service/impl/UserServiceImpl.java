@@ -223,10 +223,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.FORMAT_ERROR);
         }
 
-        String code = codeUtil.getRandomCode();
+        String code = codeUtil.getRandomCode().substring(0, 4);
 
         // TODO 删去
-        code = "114514";
+        code = "1145";
 
         Map<String, Object> map = new HashMap<>();
         map.put("verificationCode", code);
