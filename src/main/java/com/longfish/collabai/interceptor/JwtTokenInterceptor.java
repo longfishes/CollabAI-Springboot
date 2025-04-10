@@ -41,6 +41,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         }
         if (handlerMethod.getMethodAnnotation(NoLogin.class) != null ||
             handlerMethod.getBeanType().getAnnotation(NoLogin.class) != null) {
+            BaseContext.setCurrent(-1L, "anonymous");
             return true;
         }
         if (handlerMethod.getBean().getClass().getName().contains("BasicErrorController")) {
