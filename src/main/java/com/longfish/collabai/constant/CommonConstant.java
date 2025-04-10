@@ -40,4 +40,6 @@ public interface CommonConstant {
 
     String FINISH_TAG = "@FINISH@";
 
+    String HEART_BREAK = "@HEART@";
+
 }

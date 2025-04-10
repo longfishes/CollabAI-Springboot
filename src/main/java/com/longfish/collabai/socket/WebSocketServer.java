@@ -25,8 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.longfish.collabai.constant.CommonConstant.USER_ID;
-import static com.longfish.collabai.constant.CommonConstant.USER_NAME;
+import static com.longfish.collabai.constant.CommonConstant.*;
 
 @Component
 @ServerEndpoint(value = "/ws/{meetingId}/{sessionId}")
@@ -121,6 +120,8 @@ public class WebSocketServer {
 
     @OnMessage(maxMessageSize = 104857600)
     public void onMessage(String message, @PathParam("sessionId") String sessionId) {
+        if (HEART_BREAK.equals(message)) return;
+
         Map<String, String> messageMap = new HashMap<>();
         messageMap.put("role", "user");
         messageMap.put("content", message);
