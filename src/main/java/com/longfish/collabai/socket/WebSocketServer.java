@@ -1,5 +1,6 @@
 package com.longfish.collabai.socket;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
@@ -84,6 +85,7 @@ public class WebSocketServer {
                     "\n会议录音详细记录：" + meeting.getSpeechText();
 
             String aiSummary = meeting.getAiSummary();
+            if (StringUtils.isBlank(aiSummary)) aiSummary = "空";
 
             Map<String, String> summarizeContentMap = new HashMap<>();
             summarizeContentMap.put("role", "user");
