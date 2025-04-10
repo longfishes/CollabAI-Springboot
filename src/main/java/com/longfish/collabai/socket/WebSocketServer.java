@@ -4,6 +4,8 @@ import com.longfish.collabai.context.AIStrategyContext;
 import com.longfish.collabai.enums.StatusCodeEnum;
 import com.longfish.collabai.exception.BizException;
 import com.longfish.collabai.pojo.dto.WsDTO;
+import com.longfish.collabai.pojo.entity.Meeting;
+import com.longfish.collabai.service.IMeetingService;
 import com.longfish.collabai.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +28,7 @@ import static com.longfish.collabai.constant.CommonConstant.USER_ID;
 import static com.longfish.collabai.constant.CommonConstant.USER_NAME;
 
 @Component
-@ServerEndpoint(value = "/ws/{sessionId}")
+@ServerEndpoint(value = "/ws/{meetingId}/{sessionId}")
 @Slf4j
 public class WebSocketServer {
 
@@ -39,6 +41,8 @@ public class WebSocketServer {
 
     private static AIStrategyContext aiStrategyContext;
 
+    private static IMeetingService meetingService;
+
     @PostConstruct
     public void init() {
         tokenKey = secretKey;
@@ -49,8 +53,15 @@ public class WebSocketServer {
         WebSocketServer.aiStrategyContext = aiStrategyContext;
     }
 
+    @Autowired
+    public void setMeetingService(IMeetingService meetingService) {
+        WebSocketServer.meetingService = meetingService;
+    }
+
     @OnOpen
-    public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
+    public void onOpen(Session session,
+            @PathParam("sessionId") String sessionId,
+            @PathParam("meetingId") String meetingId) {
         long userId;
         String nickname;
         try {
@@ -62,12 +73,37 @@ public class WebSocketServer {
             throw new BizException(StatusCodeEnum.NO_LOGIN);
         }
 
+        List<Map<String, String>> chatHistory = new ArrayList<>();
+        try {
+            Meeting meeting = meetingService.getById(meetingId);
+            if (meeting == null) throw new BizException(StatusCodeEnum.MEETING_NOT_FOUND);
+
+            String summarizeContent =  "帮我条理清晰地总结以下内容：\n" +
+                    "会议主题：" + meeting.getTitle() +
+                    "\n会议文档：" + meeting.getMdContent() +
+                    "\n会议录音详细记录：" + meeting.getSpeechText();
+
+            String aiSummary = meeting.getAiSummary();
+
+            Map<String, String> summarizeContentMap = new HashMap<>();
+            summarizeContentMap.put("role", "user");
+            summarizeContentMap.put("content", summarizeContent);
+
+            Map<String, String> aiSummaryMap = new HashMap<>();
+            aiSummaryMap.put("role", "assistant");
+            aiSummaryMap.put("content", aiSummary);
+
+            chatHistory.add(summarizeContentMap);
+            chatHistory.add(aiSummaryMap);
+
+        } catch (Exception ignore) {}
+
         log.info("会话 {} 建立连接", sessionId);
         WsDTO dto = WsDTO.builder()
                 .session(session)
                 .nickName(nickname)
                 .userId(userId)
-                .chatHistory(new ArrayList<>())
+                .chatHistory(chatHistory)
                 .build();
         sessionMap.put(sessionId, dto);
     }
@@ -102,12 +138,6 @@ public class WebSocketServer {
     @OnClose
     public void onClose(@PathParam("sessionId") String sessionId) {
         sessionMap.remove(sessionId);
-    }
-
-    public void sendMessage(String sessionId, String message) {
-        try {
-            sessionMap.get(sessionId).getSession().getBasicRemote().sendText(message);
-        } catch (IOException ignore) {}
     }
 
     public void broadcasts(String message) {
