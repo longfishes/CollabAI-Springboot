@@ -38,4 +38,6 @@ public interface CommonConstant {
 
     String DEFAULT_COVER = "https://blog.frium.top/upload/%E7%BD%91%E6%98%93%E4%BA%91%E8%83%8C%E6%99%AF.jpg";
 
+    String FINISH_TAG = "@FINISH@";
+
 }

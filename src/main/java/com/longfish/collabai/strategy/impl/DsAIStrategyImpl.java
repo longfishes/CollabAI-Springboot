@@ -2,6 +2,7 @@ package com.longfish.collabai.strategy.impl;
 
 import com.longfish.collabai.strategy.AIStrategy;
 import com.longfish.collabai.util.DsRequestUtil;
+import jakarta.websocket.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,11 @@ public class DsAIStrategyImpl implements AIStrategy {
     @Override
     public String chatWithHistory(List<Map<String, String>> history) {
         return dsRequestUtil.callDeepSeekApi(history);
+    }
+
+    @Override
+    public String chatStream(Session session, List<Map<String, String>> history) {
+        return dsRequestUtil.chatStream(session, history);
     }
 
 }

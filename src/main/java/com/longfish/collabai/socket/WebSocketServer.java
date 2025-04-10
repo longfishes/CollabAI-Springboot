@@ -90,8 +90,7 @@ public class WebSocketServer {
         List<Map<String, String>> chatHistory = sessionMap.get(sessionId).getChatHistory();
         chatHistory.add(messageMap);
 
-        String resp = aiStrategyContext.execChatWithHistory(chatHistory);
-        sendMessage(sessionId, resp);
+        String resp = aiStrategyContext.execChatStream(sessionMap.get(sessionId).getSession(), chatHistory);
 
         Map<String, String> respMap = new HashMap<>();
         respMap.put("role", "assistant");
