@@ -225,8 +225,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         String code = codeUtil.getRandomCode().substring(0, 4);
 
-        // TODO 删去
-        code = "1145";
+//        // TODO 删去
+//        code = "1145";
 
         Map<String, Object> map = new HashMap<>();
         map.put("verificationCode", code);
