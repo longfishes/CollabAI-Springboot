@@ -288,6 +288,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
 
+        query.setId(result.getId());
         User update = User.builder()
                 .id(query.getId())
                 .password(DigestUtils.md5DigestAsHex(forgotDTO.getPassword().getBytes()))
